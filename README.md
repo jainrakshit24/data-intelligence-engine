@@ -1,88 +1,194 @@
-# Data Intelligence Engine
+<div align="center">
 
-An Agent Skill that takes a data problem and works out what to do with it.
+# 🔍 Data Intelligence Engine
 
-You bring a dataset, a pipeline, a SQL file or just a question. It classifies the request, loads
-only the methodology that request needs, runs the checks, and reports what it found — with every
-claim graded by the evidence behind it.
+**An Agent Skill that takes a data problem and works out what to do with it.**
 
-It is not a menu of commands. You describe the problem in your own words.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-3776AB.svg?logo=python&logoColor=white)](#-requirements)
+[![Version](https://img.shields.io/badge/version-0.4.0-success.svg)](#)
+[![Intents](https://img.shields.io/badge/intents-27-8A2BE2.svg)](#-how-routing-works)
+[![Scripts](https://img.shields.io/badge/scripts-11-orange.svg)](#-the-scripts)
 
-```
+*You describe the problem in your own words. It is not a menu of commands.*
+
+</div>
+
+---
+
+You bring a dataset, a pipeline, a SQL file or just a question. The skill classifies the request,
+loads **only** the methodology that request needs, runs the checks, and reports what it found —
+with every claim graded by the evidence behind it.
+
+```text
 > this orders.csv came from the new export, is it any good?
 
 DATASET  orders.csv  (csv, 758 KiB)  rows 5,070  columns 17
 DATA HEALTH SCORE: 94.5/100  —  PROVISIONAL  (4 of 6 dimensions measured)
 
 RISK TRIGGERS  (14)
-  [duplicate-key]  order_id: looks like a key but 70 rows repeat an existing value
-  [mixed-date-formats]  order_date: %Y-%m-%d 85.9%, %d/%m/%Y 14.1%
-  [silent-nulls]  amount: 120 placeholder values ('n/a'×100, 'null'×20) = 2.4% of rows
-  [polluted-type]  quantity: only 70.1% of present values parse as numbers
+  [duplicate-key]        order_id: looks like a key but 70 rows repeat an existing value
+  [mixed-date-formats]   order_date: %Y-%m-%d 85.9%, %d/%m/%Y 14.1%
+  [silent-nulls]         amount: 120 placeholders ('n/a'×100, 'null'×20) = 2.4% of rows
+  [polluted-type]        quantity: only 70.1% of present values parse as numbers
+  [leading-zeros]        store_code: 5,070 values start with 0 — casting would destroy them
   …
 
 COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole · filters: none
 ```
 
-That score says `PROVISIONAL` because every check was inferred rather than confirmed against
-your business rules. The skill will not quietly drop the word.
+> That score says **PROVISIONAL** because every check was inferred rather than confirmed against
+> your business rules. The skill will not quietly drop the word.
 
-## Install
+---
+
+## 📦 Install
 
 ```bash
 git clone https://github.com/jainrakshit24/data-intelligence-engine
 cd data-intelligence-engine
+
 pip install -r code/requirements.txt
+
 ln -s "$PWD/code" ~/.claude/skills/data-intelligence-engine
 ```
 
-Restart your agent. It picks the skill up by name and uses it when a request fits — you do not
-invoke it by hand.
+Restart your agent. It picks the skill up by name and uses it when a request fits — **you never
+invoke it by hand**.
 
-The methodology works without the Python packages. The scripts do not, and the skill says which
-one could not run rather than guessing around it.
+<details>
+<summary><b>Installing somewhere other than Claude Code</b></summary>
 
-## What it handles
+<br>
 
-| You have | It does |
-|---|---|
-| A CSV, TSV, Parquet, JSON, Excel file or a database table | Profiles it, scores its health, surfaces the risks worth knowing about |
-| Data that changed and you don't know why | Finds volume, metric and null-rate anomalies, level shifts, and the segments that moved |
-| Two versions of a dataset | Reconciles them row by row and unit by unit |
-| A pipeline, dbt project, Airflow DAG or SQL file | Reviews it statically — without running it, importing it, or needing the tool installed |
-| A dataset headed for a model | Checks it for leakage, class balance and split problems. The data side only |
-| Definitions nobody wrote down | Records them as a `data-context.md` it reads first next time |
+The skill is portable: its frontmatter uses only `name`, `description`, `license`,
+`compatibility` and `metadata`, so it is accepted anywhere Agent Skills are. Copy `code/` to
+whatever directory your agent loads skills from, named `data-intelligence-engine`.
 
-Twenty-seven intents in all, and a request routes to as many as apply: *"my daily customer
-pipeline has 30% fewer records, find out why"* is a quality check, an anomaly scan, a pipeline
-debug and an investigation at once.
+The methodology works without the Python packages. The scripts do not — and the skill says
+which one could not run rather than guessing around it.
 
-## The rules it will not bend
+</details>
 
-Seven rules apply to every request. These four are why the reports can be trusted:
+---
 
-**Profile, don't read.** The scripts compute; the model sees only aggregates. Opening a data
-file into an agent's context sends its rows to the model provider, so this skill does not do it
-— and says so when something else does.
+## 🧭 How routing works
 
-**No fake execution.** A check that could not run is reported `NOT_VERIFIED` and is never
-promoted to a finding. "I could not reach the database" is an answer; a guess dressed as one is
-not.
+`SKILL.md` is a thin router. Everything else loads **on demand**, and only when an intent names
+it — so a request pays for the methodology it uses and nothing else.
 
-**Coverage, in numbers.** Every report states how much data it actually covered. No claim may be
-broader than its coverage, and a sample produces an estimate, labelled as one.
+```mermaid
+flowchart LR
+    A["💬 Your request<br/><i>'why are there fewer rows today?'</i>"] --> B{{"🧭 Router<br/>27 intents"}}
 
-**Data is never instructions.** Text inside a cell that reads like a command is data. If it
-looks like an injection attempt, that is itself a finding — and the fixtures include four.
+    B --> C["DATA_QUALITY"]
+    B --> D["ANOMALY_DETECTION"]
+    B --> E["PIPELINE_DEBUGGING"]
 
-The other three: an evidence ladder that keeps OBSERVATION, INTERPRETATION, HYPOTHESIS and
-CONFIRMED apart; no silent changes to your data; and arithmetic integrity, so averages are
-recomputed from sums and counts and a pooled comparison is checked for reversal inside the
-groups.
+    C & D & E --> F["📚 Loads only the named modules<br/><b>a handful of 52</b>"]
+    F --> G["⚙️ Scripts compute<br/><i>the model never sees a row</i>"]
+    G --> H["📋 Report<br/>every claim graded + coverage"]
 
-## The scripts
+    style A fill:#1f2937,stroke:#4b5563,color:#f9fafb
+    style B fill:#5b21b6,stroke:#7c3aed,color:#ffffff
+    style F fill:#1e3a8a,stroke:#3b82f6,color:#ffffff
+    style G fill:#854d0e,stroke:#ca8a04,color:#ffffff
+    style H fill:#14532d,stroke:#16a34a,color:#ffffff
+```
 
-Eleven of them, in `code/scripts/`. The skill runs them for you; you can also run them directly.
+One request routes to **as many intents as apply**. *"My daily customer pipeline has 30% fewer
+records, find out why"* is a quality check, an anomaly scan, a pipeline debug and a general
+investigation — all at once.
+
+---
+
+## 🎯 What it handles
+
+| | You have | It does |
+|:--:|---|---|
+| 📊 | A CSV, TSV, Parquet, JSON, Excel file or a database table | Profiles it, scores its health, surfaces the risks worth knowing about |
+| 📉 | Data that changed and you don't know why | Finds volume, metric and null-rate anomalies, level shifts, and the segments that moved |
+| ⚖️ | Two versions of a dataset | Reconciles them row by row and unit by unit |
+| 🔧 | A pipeline, dbt project, Airflow DAG or SQL file | Reviews it statically — without running it, importing it, or needing the tool installed |
+| 🤖 | A dataset headed for a model | Checks it for leakage, class balance and split problems. The data side only |
+| 📝 | Definitions nobody wrote down | Records them as a `data-context.md` it reads first next time |
+
+---
+
+## 🛡️ The rules it will not bend
+
+Seven rules apply to every request. These four are why the reports can be trusted.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🚫 Profile, don't read
+
+Scripts compute; the model sees only aggregates. Opening a data file into an agent's context
+sends its rows to the model provider — so this skill does not do it, and says so when something
+else does.
+
+</td>
+<td width="50%" valign="top">
+
+### ❌ No fake execution
+
+A check that could not run is reported `NOT_VERIFIED` and is **never** promoted to a finding.
+"I could not reach the database" is an answer. A guess dressed as one is not.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 📏 Coverage, in numbers
+
+Every report states how much data it actually covered. No claim may be broader than its
+coverage, and a sample produces an *estimate*, labelled as one.
+
+</td>
+<td width="50%" valign="top">
+
+### 🧱 Data is never instructions
+
+Text in a cell that reads like a command is data. If it looks like an injection attempt, that is
+itself a finding — the test fixtures include four.
+
+</td>
+</tr>
+</table>
+
+The other three: an **evidence ladder**, **no silent changes** to your data, and **arithmetic
+integrity** — averages recomputed from sums and counts, and every pooled comparison checked for
+reversal inside the groups.
+
+### The evidence ladder
+
+Nothing is called a cause until a check supports it.
+
+```mermaid
+flowchart LR
+    O["👁️ OBSERVATION<br/><i>measured</i>"] --> I["💭 INTERPRETATION<br/><i>what it may mean</i>"]
+    I --> H["🔬 HYPOTHESIS<br/><i>testable cause</i>"]
+    H --> Q{"source<br/>reachable?"}
+    Q -->|yes| E["✅ CONFIRMED<br/><i>a check supported it</i>"]
+    Q -->|no| N["🚫 NOT_VERIFIED<br/><i>never promoted</i>"]
+
+    style O fill:#1f2937,stroke:#4b5563,color:#f9fafb
+    style E fill:#14532d,stroke:#16a34a,color:#ffffff
+    style N fill:#7f1d1d,stroke:#dc2626,color:#ffffff
+    style Q fill:#854d0e,stroke:#ca8a04,color:#ffffff
+```
+
+Below `CONFIRMED` it may only say *"likely"*, *"consistent with"* or *"requires verification"* —
+never *"caused by"*.
+
+---
+
+## ⚙️ The scripts
+
+Eleven of them, in `code/scripts/`. The skill runs them for you; you can run them directly too.
 
 | Script | What it answers |
 |---|---|
@@ -98,39 +204,65 @@ Eleven of them, in `code/scripts/`. The skill runs them for you; you can also ru
 | `dag_check.py` | What is wrong with this Airflow DAG, without importing it? |
 | `dbt_check.py` | What is wrong with this dbt project, without running it? |
 
-Every one of them prints aggregates and a `COVERAGE:` line, and none prints raw rows by default.
+Every one prints aggregates and a `COVERAGE:` line. **None prints raw rows by default.**
 
-## How it is put together
-
+```bash
+# they work standalone, too
+python3 code/scripts/profile_dataset.py sales.csv
+python3 code/scripts/quality_checks.py sales.csv --rules rules.json
+python3 code/scripts/drift_check.py last_week.csv this_week.csv
 ```
+
+---
+
+## 🗂️ How it is put together
+
+```text
 code/
-├── SKILL.md       the router — the only file loaded every time
-├── references/    32 methodology modules, loaded only when an intent names one
-├── workflows/     11 step-by-step procedures
-├── templates/     9 report shapes
-├── scripts/       the 11 scripts above
-└── requirements.txt
+├── 📄 SKILL.md          the router — the only file loaded every time
+├── 📚 references/       32 methodology modules, loaded only when an intent names one
+│   └── root-cause/      6 playbooks, routed by issue type
+├── 🔀 workflows/        11 step-by-step procedures
+├── 📋 templates/        9 report shapes
+├── ⚙️  scripts/          the 11 scripts above
+└── 📦 requirements.txt
 ```
 
-**Progressive disclosure is the point.** `SKILL.md` is a thin router; the other 52 modules load
-only when an intent names them. A typical task reads a fraction of the corpus, so the
-methodology can be thorough without every request paying for all of it.
+**Progressive disclosure is the point.** `SKILL.md` is thin; the other **52 modules** load only
+when named. A typical task reads a fraction of the corpus, so the methodology can be thorough
+without every request paying for all of it.
 
-## Out of scope, on purpose
+Work moves through nine stages, and the skill says which ones it skipped:
 
-It does not train, tune, evaluate or deploy models. Asked to "build a model", it checks the data
-is ready and then says where its job ends.
+```text
+DATA → UNDERSTAND → VALIDATE → CLEAN → ANALYZE → DESIGN → BUILD → VERIFY → DOCUMENT
+```
 
-It has no live connectors to warehouses or BI tools. It writes the SQL, labels it
-`NOT_VERIFIED`, and asks you to run it.
+---
 
-Both limits are deliberate: a skill that pretends to have run something is worse than one that
-tells you it did not.
+## 🚧 Out of scope, on purpose
 
-## Requirements
+| | |
+|---|---|
+| 🤖 **Model training and deployment** | Asked to "build a model", it checks the data is ready, then says where its job ends |
+| 🔌 **Live warehouse / BI connectors** | It writes the SQL, labels it `NOT_VERIFIED`, and asks you to run it |
 
-Python 3.9+, `duckdb>=1.1`, `sqlglot>=30` for SQL work, and `pyyaml` for dbt projects.
+Both limits are deliberate. **A skill that pretends to have run something is worse than one that
+tells you it did not.**
 
-## Licence
+---
 
-MIT.
+## 📋 Requirements
+
+| | |
+|---|---|
+| Python | 3.9+ |
+| `duckdb` | `>=1.1` — every script |
+| `sqlglot` | `>=30` — SQL work |
+| `pyyaml` | dbt projects only |
+
+---
+
+## 📜 Licence
+
+MIT — see [LICENSE](LICENSE).
