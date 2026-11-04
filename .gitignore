@@ -14,8 +14,8 @@ graphify-out/
 /panel/
 
 # development only
-code/tests/
-code/evals/
+skills/data-intelligence-engine/tests/
+skills/data-intelligence-engine/evals/
 __pycache__/
 *.pyc
 .DS_Store

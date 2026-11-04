@@ -11,7 +11,7 @@
       "name": "data-intelligence-engine",
       "description": "Profiles, cleans and quality-checks datasets, scores data health and reasons about data pipelines. The scripts read the data so the model never has to.",
       "version": "0.4.0",
-      "source": "./code",
+      "source": ".",
       "license": "MIT",
       "homepage": "https://github.com/jainrakshit24/data-intelligence-engine",
       "author": {

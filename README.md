@@ -44,10 +44,17 @@ COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole · filters: none
 
 ## 📦 Install
 
-**One line, in Claude Code 2.1.275 or later:**
+**In Claude Code 2.1.275 or later** — one line, no clone:
 
 ```
 /plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine
+```
+
+**Anywhere else** — Cursor, Codex, Windsurf and the rest, through the
+[Agent Skills directory](https://skills.sh):
+
+```bash
+npx skills add jainrakshit24/data-intelligence-engine
 ```
 
 <details>
@@ -58,7 +65,7 @@ COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole · filters: none
 ```bash
 git clone https://github.com/jainrakshit24/data-intelligence-engine
 cd data-intelligence-engine
-ln -s "$PWD/code" ~/.claude/skills/data-intelligence-engine
+ln -s "$PWD/skills/data-intelligence-engine" ~/.claude/skills/data-intelligence-engine
 ```
 
 </details>
@@ -78,8 +85,9 @@ invoke it by hand**.
 <br>
 
 The skill is portable: its frontmatter uses only `name`, `description`, `license`,
-`compatibility` and `metadata`, so it is accepted anywhere Agent Skills are. Copy `code/` to
-whatever directory your agent loads skills from, named `data-intelligence-engine`.
+`compatibility` and `metadata`, so it is accepted anywhere Agent Skills are. Copy
+`skills/data-intelligence-engine/` to whatever directory your agent loads skills from, keeping
+the folder name.
 
 The methodology works without the Python packages. The scripts do not — and the skill says
 which one could not run rather than guessing around it.
@@ -204,7 +212,7 @@ never *"caused by"*.
 
 ## ⚙️ The scripts
 
-Eleven of them, in `code/scripts/`. The skill runs them for you; you can run them directly too.
+Eleven of them, in `skills/data-intelligence-engine/scripts/`. The skill runs them for you; you can run them directly too.
 
 | Script | What it answers |
 |---|---|
@@ -224,9 +232,10 @@ Every one prints aggregates and a `COVERAGE:` line. **None prints raw rows by de
 
 ```bash
 # they work standalone, too
-python3 code/scripts/profile_dataset.py sales.csv
-python3 code/scripts/quality_checks.py sales.csv --rules rules.json
-python3 code/scripts/drift_check.py last_week.csv this_week.csv
+cd skills/data-intelligence-engine
+python3 scripts/profile_dataset.py sales.csv
+python3 scripts/quality_checks.py sales.csv --rules rules.json
+python3 scripts/drift_check.py last_week.csv this_week.csv
 ```
 
 ---
@@ -234,14 +243,16 @@ python3 code/scripts/drift_check.py last_week.csv this_week.csv
 ## 🗂️ How it is put together
 
 ```text
-code/
-├── 📄 SKILL.md          the router — the only file loaded every time
-├── 📚 references/       32 methodology modules, loaded only when an intent names one
-│   └── root-cause/      6 playbooks, routed by issue type
-├── 🔀 workflows/        11 step-by-step procedures
-├── 📋 templates/        9 report shapes
-├── ⚙️  scripts/          the 11 scripts above
-└── 📦 requirements.txt
+.claude-plugin/          the plugin and marketplace manifests
+skills/
+└── data-intelligence-engine/
+    ├── 📄 SKILL.md          the router — the only file loaded every time
+    ├── 📚 references/       32 methodology modules, loaded only when an intent names one
+    │   └── root-cause/      6 playbooks, routed by issue type
+    ├── 🔀 workflows/        11 step-by-step procedures
+    ├── 📋 templates/        9 report shapes
+    ├── ⚙️  scripts/          the 11 scripts above
+    └── 📦 requirements.txt
 ```
 
 **Progressive disclosure is the point.** `SKILL.md` is thin; the other **52 modules** load only

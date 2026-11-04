@@ -9,8 +9,16 @@ It is not a menu of commands. You describe the problem in your own words.
 
 ## Install
 
+In Claude Code:
+
 ```
 /plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine
+```
+
+In any other agent, through the [Agent Skills directory](https://skills.sh):
+
+```bash
+npx skills add jainrakshit24/data-intelligence-engine
 ```
 
 Then install what the scripts need:
