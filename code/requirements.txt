@@ -1,0 +1,3 @@
+duckdb>=1.1
+sqlglot>=30
+pyyaml>=6  # dbt_check.py only
