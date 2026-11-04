@@ -19,3 +19,9 @@ skills/data-intelligence-engine/evals/
 __pycache__/
 *.pyc
 .DS_Store
+
+# the marketing site and its design record: deployed separately, not needed to use the skill
+/site/
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
