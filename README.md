@@ -44,13 +44,29 @@ COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole · filters: none
 
 ## 📦 Install
 
+**One line, in Claude Code 2.1.275 or later:**
+
+```
+/plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine
+```
+
+<details>
+<summary><b>Or install it by hand</b></summary>
+
+<br>
+
 ```bash
 git clone https://github.com/jainrakshit24/data-intelligence-engine
 cd data-intelligence-engine
-
-pip install -r code/requirements.txt
-
 ln -s "$PWD/code" ~/.claude/skills/data-intelligence-engine
+```
+
+</details>
+
+Then install what the scripts need:
+
+```bash
+pip install duckdb sqlglot pyyaml      # pyyaml only for dbt projects
 ```
 
 Restart your agent. It picks the skill up by name and uses it when a request fits — **you never

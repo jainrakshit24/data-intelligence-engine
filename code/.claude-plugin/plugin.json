@@ -1,0 +1,22 @@
+{
+  "name": "data-intelligence-engine",
+  "version": "0.4.0",
+  "description": "Profiles, cleans and quality-checks datasets, scores data health and reasons about data pipelines, with every finding graded by evidence and coverage. The scripts read the data so the model never has to.",
+  "license": "MIT",
+  "homepage": "https://github.com/jainrakshit24/data-intelligence-engine",
+  "author": {
+    "name": "jainrakshit24",
+    "email": "itsrakshitjain@gmail.com",
+    "url": "https://github.com/jainrakshit24"
+  },
+  "keywords": [
+    "data-quality",
+    "data-profiling",
+    "anomaly-detection",
+    "data-pipelines",
+    "dbt",
+    "airflow",
+    "sql",
+    "duckdb"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "data-intelligence-engine",
+  "description": "Data tooling for Claude Code: profiling, quality, anomalies, drift and pipeline review, with every finding graded by its evidence.",
+  "owner": {
+    "name": "jainrakshit24",
+    "email": "itsrakshitjain@gmail.com",
+    "url": "https://github.com/jainrakshit24"
+  },
+  "plugins": [
+    {
+      "name": "data-intelligence-engine",
+      "description": "Profiles, cleans and quality-checks datasets, scores data health and reasons about data pipelines. The scripts read the data so the model never has to.",
+      "version": "0.4.0",
+      "source": "./code",
+      "license": "MIT",
+      "homepage": "https://github.com/jainrakshit24/data-intelligence-engine",
+      "author": {
+        "name": "jainrakshit24",
+        "url": "https://github.com/jainrakshit24"
+      },
+      "keywords": [
+        "data-quality",
+        "data-profiling",
+        "anomaly-detection",
+        "data-pipelines",
+        "dbt",
+        "airflow",
+        "sql",
+        "duckdb"
+      ]
+    }
+  ]
+}
