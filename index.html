@@ -9,17 +9,19 @@
 <meta property="og:description" content="The model never sees your rows. Only what they add up to.">
 <meta property="og:type" content="website">
 <link rel="stylesheet" href="fonts.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='5' fill='%2315181C'/><rect x='8' y='6' width='16' height='4' rx='1' fill='%23FFA424'/><rect x='8' y='14' width='16' height='4' rx='1' fill='%23FFA424'/><rect x='8' y='22' width='16' height='4' rx='1' fill='%232F353C'/></svg>">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2028%2028'%3E%3Crect%20width='28'%20height='28'%20rx='6'%20fill='%2316191D'/%3E%3Crect%20x='6'%20y='6.5'%20width='16'%20height='2.6'%20rx='1.3'%20fill='%2339414A'/%3E%3Crect%20x='6'%20y='11.4'%20width='16'%20height='2.6'%20rx='1.3'%20fill='%2339414A'/%3E%3Crect%20x='6'%20y='16.3'%20width='10'%20height='2.6'%20rx='1.3'%20fill='%2339414A'/%3E%3Crect%20x='6'%20y='21.2'%20width='16'%20height='2.6'%20rx='1.3'%20fill='%23FF5A2B'/%3E%3C/svg%3E">
 <style>
 :root{
-  --housing:#15181C; --housing-2:#191D22; --deep:#0F1215; --deep-2:#0B0E10;
-  --bezel:#23282E; --bezel-hi:#343B43; --bezel-lo:#0C0F12;
-  --ink:#E8EAED; --ink-2:#A7AEB6; --ink-3:#8A9199;
-  --lit:#FFA424; --lit-soft:#FFC675;
-  --ghost:#2F353C; --ghost-hi:#3A424A;
-  --ok:#5BD67E; --bad:#FF6B5E;
-  --tape:#EDE7DA; --tape-2:#E2DACA; --tape-ink:#22201C; --tape-dim:#5C564B;
-  --gut:clamp(20px,5vw,64px);
+  --housing:#DFE3E0; --housing-2:#EAEDEA;
+  --deep:#16191D; --deep-2:#0D1013;
+  --bezel:#C6CCC7; --bezel-hi:#AEB5AF; --bezel-lo:#949C96;
+  --ink:#13171A; --ink-2:#444B50; --ink-3:#565D62;
+  --well-ink:#D8DCE0; --well-dim:#9AA1A9;
+  --lit:#FF5A2B; --lit-ink:#B82F0D; --lit-soft:#FF8A64;
+  --ghost:#2B3036; --ghost-hi:#363D45;
+  --ok:#3FD47A; --ok-ink:#0F6B36; --bad:#FF6B5E;
+  --tape:#FBFBFA; --tape-2:#EFF1EE; --tape-ink:#13171A; --tape-dim:#565D62;
+  --gut:clamp(20px,4.5vw,72px);
   --r:3px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -31,148 +33,218 @@ body{
   -webkit-font-smoothing:antialiased; overflow-x:hidden;
 }
 /* ---- browser surfaces: these belong to the panel, not to the browser ---- */
-::selection{background:var(--lit);color:var(--deep-2)}
-:focus-visible{outline:2px solid var(--lit);outline-offset:3px;border-radius:2px}
-html{scrollbar-color:var(--bezel-hi) var(--deep-2);scrollbar-width:thin}
+::selection{background:var(--lit-ink);color:#fff}
+:focus-visible{outline:2px solid var(--lit-ink);outline-offset:3px;border-radius:2px}
+html{scrollbar-color:var(--bezel-hi) var(--housing);scrollbar-width:thin}
 ::-webkit-scrollbar{width:11px;height:11px}
-::-webkit-scrollbar-track{background:var(--deep-2)}
-::-webkit-scrollbar-thumb{background:var(--bezel-hi);border:3px solid var(--deep-2);border-radius:6px}
-::-webkit-scrollbar-thumb:hover{background:#47505a}
+::-webkit-scrollbar-track{background:var(--housing)}
+::-webkit-scrollbar-thumb{background:var(--bezel-hi);border:3px solid var(--housing);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#A79E8C}
 input,button{font:inherit;color:inherit}
 a{color:inherit}
 
 /* ---- the panel: milled plate the whole page is machined out of ---- */
 .plate{
-  max-width:1280px;margin:0 auto;padding:0 var(--gut);
+  max-width:1680px;margin:0 auto;padding:0 var(--gut);
 }
 .rail{
   border-left:1px solid var(--bezel);border-right:1px solid var(--bezel);
-  max-width:1280px;margin:0 auto;
+  max-width:1680px;margin:0 auto;
 }
 .screw{
   width:11px;height:11px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,var(--bezel-hi),#1b1f24 70%);
+  background:radial-gradient(circle at 35% 30%,#F0F3F0,var(--bezel-hi) 72%);
   box-shadow:0 1px 1px rgba(0,0,0,.6),inset 0 0 0 1px #0d1013;
   position:relative;flex:none
 }
-.screw::after{content:"";position:absolute;inset:3px 1px;border-top:1px solid #0d1013;transform:rotate(28deg)}
+.screw::after{content:"";position:absolute;inset:3px 1px;border-top:1px solid #7E8781;transform:rotate(28deg)}
 
 /* ---- top bezel ---- */
 header{
   position:sticky;top:0;z-index:40;
-  background:linear-gradient(180deg,var(--bezel) 0%,#1d2228 100%);
+  background:linear-gradient(180deg,#EDF0ED 0%,var(--housing) 100%);
   border-bottom:1px solid var(--bezel-lo);
-  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 6px 18px -8px rgba(0,0,0,.8);
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset;
 }
-.bar{display:flex;align-items:center;gap:clamp(14px,2.4vw,30px);height:62px}
-.mark{display:flex;align-items:center;gap:11px;text-decoration:none;flex:none}
-.mark .lamp{width:9px;height:9px;border-radius:50%;background:var(--lit);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+header{transition:box-shadow .25s ease}
+header.stuck{box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 26px -12px rgba(19,23,26,.4)}
+.hdr-scan{position:absolute;left:0;bottom:-1px;height:2px;width:100%;transform-origin:left;
+  background:linear-gradient(90deg,transparent,var(--lit-ink),transparent);transform:scaleX(0);opacity:0}
+.booted .hdr-scan{animation:scan 1.5s cubic-bezier(.16,1,.3,1) .15s both}
+@keyframes scan{0%{transform:scaleX(0);opacity:1}70%{opacity:1}100%{transform:scaleX(1);opacity:0}}
+.bar{display:flex;align-items:center;gap:clamp(12px,1.8vw,24px);height:62px}
+
+/* how far down the panel you are */
+.progress{position:absolute;left:0;top:0;height:2px;width:100%;transform:scaleX(0);transform-origin:left;
+  background:var(--lit-ink);transition:transform .1s linear}
+
+/* one lit marker that slides between the nav entries as you scroll */
+.navwrap{position:relative;display:flex;gap:clamp(10px,1.5vw,20px);align-items:center}
+.navmark{position:absolute;bottom:3px;left:0;height:2px;width:0;background:var(--lit-ink);
+  opacity:0;transform:translateX(0);
+  transition:transform .42s cubic-bezier(.16,1,.3,1),width .42s cubic-bezier(.16,1,.3,1),opacity .3s ease}
+nav a.here{color:var(--ink)}
+
+/* the pill rotates through facts that are all true */
+.pill-text{display:block;position:relative;overflow:hidden;height:1.35em}
+.pill-fact{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .3s ease}
+.pill-fact.out{transform:translateY(-110%);opacity:0}
+.pill-fact.in{animation:factin .45s cubic-bezier(.16,1,.3,1) both}
+@keyframes factin{from{transform:translateY(110%);opacity:0}to{transform:none;opacity:1}}
+
+.pill{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex:0 1 auto;min-width:0;
+  margin:0 auto;padding:5px 13px 5px 5px;border-radius:999px;
+  background:var(--deep);border:1px solid var(--deep);
+  box-shadow:0 2px 6px rgba(19,23,26,.2);
+  transition:border-color .2s ease,transform .2s cubic-bezier(.16,1,.3,1),background .2s ease}
+.pill:hover{background:#1E2329;transform:translateY(-1px)}
+.pill:active{transform:translateY(0)}
+.pill-tag{flex:none;font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:#1A0B05;background:var(--lit);border-radius:999px;padding:4px 9px;position:relative;overflow:hidden}
+.booted .pill-tag::after{content:"";position:absolute;inset:0;background:#1A0B05;
+  opacity:0;animation:tagblink 3.4s steps(1) infinite}
+@keyframes tagblink{0%,92%{opacity:0}94%,96%{opacity:.22}98%,100%{opacity:0}}
+.pill-text{font-size:13px;color:var(--well-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill-text b{color:var(--lit);font-weight:800}
+.pill-tail{color:var(--well-dim)}
+.pill-arrow{width:13px;height:13px;flex:none;color:var(--well-dim);transition:transform .22s cubic-bezier(.16,1,.3,1),color .2s}
+.pill:hover .pill-arrow{transform:translateY(2px);color:var(--lit)}
+@media(max-width:1180px){.pill-sep,.pill-tail{display:none}}
+@media(max-width:980px){.pill{display:none}}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none}
+.logo{width:27px;height:27px;flex:none;display:block}
+.logo .lg-plate{fill:var(--deep);stroke:var(--bezel-lo);stroke-width:1.5}
+.logo .lg-row{fill:#39414A;transition:fill .25s steps(1)}
+.logo .lg-out{fill:var(--lit)}
+/* on hover the rows go dark and only the result stays lit: the whole product in one gesture */
+.mark:hover .logo .lg-row{fill:#242A30}
+.mark:hover .logo .lg-row:nth-of-type(2){transition-delay:.07s}
+.mark:hover .logo .lg-row:nth-of-type(3){transition-delay:.14s}
 .mark b{
-  font-weight:760;font-size:15px;letter-spacing:.055em;text-transform:uppercase;
-  color:#D4D9DE;text-shadow:0 1px 0 rgba(0,0,0,.65);
+  font-weight:760;font-size:14px;letter-spacing:.045em;text-transform:uppercase;
+  color:var(--ink);text-shadow:none;font-weight:800;
 }
-nav{display:flex;gap:clamp(10px,1.7vw,24px);margin-left:auto;align-items:center}
-nav a{
-  text-decoration:none;color:var(--ink-2);font-size:13.5px;font-weight:530;
-  letter-spacing:.02em;padding:7px 2px;border-bottom:1.5px solid transparent;transition:color .15s,border-color .15s
+nav{display:flex;gap:clamp(10px,1.5vw,20px);align-items:center;flex:none}
+nav a:not(.ghost-btn){
+  position:relative;text-decoration:none;color:var(--ink-3);
+  font-family:'JetBrains Mono',monospace;font-size:12.4px;font-weight:450;letter-spacing:-0.01em;
+  padding:7px 1px;transition:color .18s ease
 }
-nav a:hover{color:var(--ink);border-bottom-color:var(--lit)}
+nav a:not(.ghost-btn)::after{content:"";position:absolute;left:0;right:0;bottom:3px;height:1.5px;
+  background:var(--lit-ink);transform:scaleX(0);transform-origin:left;transition:transform .26s cubic-bezier(.16,1,.3,1)}
+nav a:not(.ghost-btn):hover{color:var(--ink)}
+nav a:not(.ghost-btn):hover::after{transform:scaleX(1)}
+.ghost-btn{font-family:'JetBrains Mono',monospace;font-size:12.4px;font-weight:450}
 .ghost-btn{
   display:inline-flex;align-items:center;gap:7px;text-decoration:none;flex:none;
   font-size:13.5px;font-weight:560;padding:8px 14px;border-radius:var(--r);
-  color:var(--ink);background:#1a1e23;
-  border:1px solid var(--bezel-hi);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 2px 5px rgba(0,0,0,.45);
+  color:var(--well-ink);background:var(--deep);
+  border:1px solid var(--deep);box-shadow:0 2px 6px rgba(19,23,26,.2);
   transition:background .15s,border-color .15s,transform .08s
 }
-.ghost-btn:hover{background:#20252b;border-color:#48525c}
+.ghost-btn:hover{background:#1E2329}
 .ghost-btn:active{transform:translateY(1px)}
+@media(max-width:1560px){nav .hide-m{display:none}}
 @media(max-width:860px){nav .hide-s{display:none}.bar{height:56px}}
 @media(max-width:620px){
   nav a:not(.ghost-btn){display:none}
   .mark b{font-size:12.5px;letter-spacing:.04em}
-  .bar{gap:10px}
-  .ghost-btn{padding:7px 11px}
+  .bar{gap:9px}
+  nav{gap:8px}
+  .ghost-btn{padding:7px 10px}
+  .ghost-btn .gh-t{display:none}
+  .theme-btn{width:32px;height:32px}
+  .logo{width:24px;height:24px}
 }
-@media(max-width:380px){.mark b{max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+@media(max-width:430px){.mark b{max-width:10.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 
 /* ---- typography ---- */
 h1{
-  font-weight:800;letter-spacing:-0.042em;line-height:0.98;
-  font-size:clamp(2.3rem,4.75vw,3.8rem);text-wrap:balance;
+  font-weight:850;letter-spacing:-0.048em;line-height:0.95;
+  font-size:clamp(2.5rem,5.2vw,4.3rem);text-wrap:balance;
 }
 h1 .lit-line{display:block;text-wrap:balance}
-h1 .dim{color:var(--ink-3);font-weight:700;display:block;text-wrap:balance}
+h1 .dim{display:block;text-wrap:balance;color:var(--well-ink);font-weight:850;
+  line-height:1.2;margin-top:.16em}
+h1 .dim i{font-style:normal;background:var(--deep);display:inline;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:.08em .18em .14em;
+  border-radius:2px;margin-left:-.06em}
 h2{
-  font-weight:740;letter-spacing:-0.032em;line-height:1.05;
-  font-size:clamp(1.85rem,3.6vw,2.9rem);text-wrap:balance;
+  font-weight:820;letter-spacing:-0.042em;line-height:0.98;
+  font-size:clamp(2.1rem,4.6vw,3.9rem);text-wrap:balance;
 }
-h3{font-weight:680;letter-spacing:-0.02em;font-size:1.16rem;line-height:1.3}
+h3{font-weight:760;letter-spacing:-0.025em;font-size:1.26rem;line-height:1.25}
 p{max-width:68ch}
-.lede{font-size:clamp(1.02rem,1.5vw,1.2rem);color:var(--ink-2);line-height:1.6}
-.small{font-size:14px;color:var(--ink-3);line-height:1.6}
+.lede{font-size:clamp(1.1rem,1.75vw,1.42rem);color:var(--ink-2);line-height:1.5;font-weight:500}
+.small{font-size:14.5px;color:var(--ink-2);line-height:1.6}
 .tiny{font-size:12.5px;color:var(--ink-3);letter-spacing:.055em;text-transform:uppercase;font-weight:620}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
 
 /* ---- sections as panel modules ---- */
 section{padding:clamp(52px,7vh,86px) 0;scroll-margin-top:62px}
-main > .plate + .plate > section{border-top:1px solid var(--bezel)}
+main > .plate + .plate > section{border-top:1px solid var(--bezel-lo)}
 
 /* ---- hero ---- */
-.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,1fr);gap:clamp(26px,3.4vw,54px);align-items:start;padding-top:clamp(34px,5vh,60px);padding-bottom:0}
-.claim{padding-top:6px}
-.claim p{margin-top:24px}
-.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px;align-items:center}
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);gap:clamp(26px,3.4vw,54px);align-items:start;padding-top:clamp(28px,4vh,48px);padding-bottom:0}
+.claim{padding-top:6px;min-width:0}
+.claim p{margin-top:26px}
+.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:28px;align-items:center;min-width:0}
 
 /* the install control: a milled key on the panel */
 .key{
   display:inline-flex;align-items:stretch;border-radius:4px;overflow:hidden;
-  border:1px solid #4a3410;background:linear-gradient(180deg,#FFB44A,var(--lit) 55%,#E8911A);
-  box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 3px 0 #8E5A0E,0 8px 16px -6px rgba(0,0,0,.75);
-  transition:transform .09s,box-shadow .09s;cursor:pointer;max-width:100%
+  border:1px solid #8A2409;background:linear-gradient(180deg,#C23410,var(--lit-ink) 55%,#95250A);
+  box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 3px 0 #7A200A,0 10px 20px -10px rgba(19,23,26,.5);
+  transition:transform .09s,box-shadow .09s;cursor:pointer;max-width:100%;min-width:0
 }
-.key:hover{box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 3px 0 #8E5A0E,0 11px 22px -7px rgba(0,0,0,.8)}
-.key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 1px 0 #8E5A0E,0 4px 9px -4px rgba(0,0,0,.8)}
+.key:hover{box-shadow:0 1px 0 rgba(255,255,255,.34) inset,0 3px 0 #7A200A,0 14px 26px -11px rgba(19,23,26,.55)}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 1px 0 #7A200A,0 5px 10px -6px rgba(19,23,26,.5)}
 .key code{
-  font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:500;color:#1A1205;
-  padding:13px 15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em
+  font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:#fff;
+  padding:15px 18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em
 }
 .key .cap{
   display:flex;align-items:center;gap:7px;padding:0 15px;flex:none;
-  background:rgba(26,18,5,.13);border-left:1px solid rgba(26,18,5,.22);
-  font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#1A1205
+  background:rgba(0,0,0,.18);border-left:1px solid rgba(255,255,255,.2);
+  font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--well-ink)
 }
-.alt-install{font-size:13.5px;color:var(--ink-3)}
-.alt-install code{font-family:'JetBrains Mono',monospace;color:var(--ink-2);font-size:12.8px}
+.proof{margin-top:26px;padding-top:20px;border-top:1px solid var(--bezel-lo);font-size:15.5px;color:var(--ink-2);max-width:52ch;line-height:1.55}
+.proof-n{font-family:'JetBrains Mono',monospace;font-size:1.22em;font-weight:700;color:var(--lit-ink);font-variant-numeric:tabular-nums}
+.proof b{color:var(--ink);font-weight:700}
+.proof a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--bezel-lo);white-space:nowrap}
+.proof a:hover{color:var(--lit-ink);border-bottom-color:var(--lit-ink)}
+.alt-install{font-size:14px;color:var(--ink-2);overflow-wrap:anywhere;min-width:0}
+.alt-install code{font-family:'JetBrains Mono',monospace;color:var(--ink);font-size:13.2px}
 
 /* ---- the printer: tape feeding out of a slot ---- */
 .printer{position:relative;min-width:0}
 .slot{
   height:16px;border-radius:3px 3px 0 0;
-  background:linear-gradient(180deg,var(--bezel-lo),#1a1e23 42%,var(--deep-2) 100%);
-  border:1px solid var(--bezel);border-bottom:0;
-  box-shadow:inset 0 -7px 10px -6px #000;position:relative
+  background:linear-gradient(180deg,var(--bezel-hi),#7E8781 46%,#5D6561 100%);
+  border:1px solid var(--bezel-lo);border-bottom:0;
+  box-shadow:inset 0 -7px 10px -7px rgba(0,0,0,.65);position:relative
 }
-.slot::after{content:"";position:absolute;left:11px;right:11px;bottom:3px;height:2px;background:var(--deep-2);border-radius:2px;box-shadow:0 -1px 0 rgba(255,255,255,.05)}
+.slot::after{content:"";position:absolute;left:11px;right:11px;bottom:3px;height:2px;background:#2E3431;border-radius:2px;box-shadow:0 -1px 0 rgba(255,255,255,.18)}
 .tape{
   background:
-    linear-gradient(90deg,rgba(0,0,0,.14) 0 6px,transparent 6px),
-    linear-gradient(270deg,rgba(0,0,0,.14) 0 6px,transparent 6px),
-    linear-gradient(180deg,#F3EEE2,var(--tape) 14%,var(--tape-2) 100%);
+    linear-gradient(90deg,rgba(19,23,26,.09) 0 6px,transparent 6px),
+    linear-gradient(270deg,rgba(19,23,26,.09) 0 6px,transparent 6px),
+    linear-gradient(180deg,#fff,var(--tape) 14%,var(--tape-2) 100%);
   color:var(--tape-ink);
   font-family:'JetBrains Mono',monospace;font-size:10.4px;line-height:1.64;
   padding:15px 13px 40px;overflow:hidden;position:relative;
-  box-shadow:0 14px 34px -12px rgba(0,0,0,.85);
+  box-shadow:0 2px 3px rgba(19,23,26,.1),0 18px 38px -14px rgba(19,23,26,.42);
   mask-image:linear-gradient(180deg,#000 72%,transparent 100%);
   -webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 100%);
-  max-height:min(54vh,470px)
+  max-height:min(64vh,620px)
 }
 .tape pre{white-space:pre;font:inherit;overflow:hidden}
-.tape .k{color:#8A3F12;font-weight:600}
+.tape .k{color:var(--lit-ink);font-weight:600}
 .tape .d{color:var(--tape-dim)}
-.tape .hl{background:rgba(255,164,36,.34);box-shadow:0 0 0 1px rgba(138,63,18,.18)}
+.tape .hl{background:rgba(255,90,43,.22);box-shadow:0 0 0 1px rgba(184,47,13,.26)}
 .perf{position:absolute;left:0;right:0;height:9px;background-image:radial-gradient(circle,var(--tape-2) 1.6px,transparent 1.7px);background-size:9px 9px;opacity:.85}
-.printer figcaption{margin-top:11px;font-size:12px;color:var(--ink-3);line-height:1.5}
+.printer figcaption{margin-top:12px;font-size:13px;color:var(--ink-2);line-height:1.55}
 .printer figcaption svg{vertical-align:-2px;margin-right:5px}
 
 /* ---- readout strip across the bottom bezel of the hero ---- */
@@ -183,22 +255,21 @@ main > .plate + .plate > section{border-top:1px solid var(--bezel)}
   box-shadow:inset 0 2px 12px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.04);
   display:grid;grid-template-columns:repeat(5,1fr);
 }
-.cell{padding:18px 16px 16px;border-left:1px solid #191D22;display:flex;flex-direction:column;gap:9px;min-width:0}
+.cell{padding:20px 16px 17px;border-left:1px solid #22262B;display:flex;flex-direction:column;gap:9px;min-width:0}
 .cell:first-child{border-left:0}
-.cell .tiny{color:var(--ink-3);font-size:11px}
-.cell.dark .tiny{color:var(--ink-3)}
-.cell.dark .lbl-off{color:var(--ink-3)}
+.cell .tiny{color:var(--well-dim);font-size:11px}
+.cell.dark .tiny,.cell.dark .lbl-off{color:var(--well-dim)}
 @media(max-width:860px){
-  .hero{grid-template-columns:1fr}
+  .hero{grid-template-columns:minmax(0,1fr)}
   .strip{grid-template-columns:repeat(2,1fr)}
   .cell:nth-child(odd){border-left:0}
-  .cell{border-top:1px solid #191D22}
+  .cell{border-top:1px solid #22262B}
   .cell:nth-child(-n+2){border-top:0}
 }
-@media(max-width:460px){.strip{grid-template-columns:1fr}.cell{border-left:0;border-top:1px solid #191D22}.cell:first-child{border-top:0}}
+@media(max-width:460px){.strip{grid-template-columns:1fr}.cell{border-left:0;border-top:1px solid #22262B}.cell:first-child{border-top:0}}
 
 /* ---- seven segment ---- */
-.seg{display:block;height:var(--h,38px);width:auto}
+.seg{display:block;height:var(--h,38px);width:auto;flex:none}
 .seg .on{fill:var(--lit)}
 .seg .off{fill:var(--ghost)}
 .seg.green .on{fill:var(--ok)}
@@ -206,20 +277,24 @@ main > .plate + .plate > section{border-top:1px solid var(--bezel)}
 .segrow{display:flex;align-items:flex-end;gap:3px;flex-wrap:nowrap;min-width:0}
 .segrow .sfx{font-size:calc(var(--h,38px)*.42);font-weight:800;color:var(--lit);line-height:1;
   align-self:flex-end;padding-bottom:calc(var(--h,38px)*.04);margin:0 1px}
-.segrow .sfx.mul{color:var(--ink-2);font-size:calc(var(--h,38px)*.36);margin-left:6px;padding-bottom:calc(var(--h,38px)*.08)}
+.segrow .sfx.mul{color:var(--well-dim);font-size:calc(var(--h,38px)*.34);font-weight:700;margin-left:7px;padding-bottom:calc(var(--h,38px)*.1)}
 .segrow.dead .sfx{color:var(--ink-3)}
 
 /* ---- rule-4 module ---- */
 .r4{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(26px,4vw,56px);align-items:start}
-.selector{display:flex;gap:0;border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep);width:fit-content;max-width:100%;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+.selector{position:relative;display:flex;gap:0;border:1px solid var(--bezel-lo);border-radius:var(--r);
+  overflow:hidden;background:var(--deep);width:fit-content;max-width:100%;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+.selector .knob{position:absolute;top:0;bottom:0;left:0;width:0;background:var(--lit);
+  transition:transform .4s cubic-bezier(.16,1,.3,1),width .4s cubic-bezier(.16,1,.3,1)}
+.selector button{position:relative;z-index:1}
 .selector button{
   background:transparent;border:0;border-left:1px solid var(--bezel);cursor:pointer;
-  padding:9px 15px;font-size:13px;font-weight:620;color:var(--ink-3);letter-spacing:.02em;
+  padding:9px 15px;font-size:13px;font-weight:620;color:var(--well-dim);letter-spacing:.02em;
   font-variant-numeric:tabular-nums;transition:color .13s,background .13s;position:relative
 }
 .selector button:first-child{border-left:0}
-.selector button:hover{color:var(--ink-2)}
-.selector button[aria-pressed=true]{color:var(--deep-2);background:var(--lit);text-shadow:none}
+.selector button:hover{color:var(--well-ink)}
+.selector button[aria-pressed=true]{color:#1A0B05;background:var(--lit);text-shadow:none}
 .scalebar{display:flex;flex-direction:column;gap:18px;margin-top:26px}
 .meter{display:flex;flex-direction:column;gap:7px}
 .meter .mh{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-size:13.5px}
@@ -236,22 +311,40 @@ main > .plate + .plate > section{border-top:1px solid var(--bezel)}
 }
 @media(max-width:900px){.r4{grid-template-columns:1fr}}
 
+/* ---- readout bank: the big measured figures, in their own wells ---- */
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(192px,1fr));gap:12px;margin-top:34px}
+.well{background:linear-gradient(180deg,var(--deep),var(--deep-2));border:1px solid var(--bezel-lo);
+  border-radius:var(--r);padding:20px 20px 17px;display:flex;flex-direction:column;gap:11px;min-width:0;
+  box-shadow:inset 0 2px 14px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.5)}
+.well .segrow{overflow:hidden}
+.well .tiny{color:var(--well-dim);font-size:11px}
+.well .sub{font-size:13.5px;color:var(--well-dim);line-height:1.5}
+.well.lit-well{border-color:var(--lit-ink);box-shadow:inset 0 2px 14px rgba(0,0,0,.6),0 0 0 1px rgba(184,47,13,.28)}
+.bank-note{margin-top:18px;font-size:15.5px;color:var(--ink-2);max-width:68ch;line-height:1.62}
+
+/* a figure large enough that the number is the sentence */
+.hero-fig{display:flex;flex-direction:column;gap:14px;align-items:flex-start;margin-top:8px}
+.hero-fig .cap{font-size:13.5px;color:var(--ink-2);max-width:46ch;line-height:1.55}
+.hero-fig .cap b{color:var(--ink);font-weight:700}
+
 /* ---- spec plate: the rules, engraved as rows, not cards ---- */
-.spec{border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep);list-style:none}
+.spec{border:1px solid var(--bezel-lo);border-radius:var(--r);overflow:hidden;background:var(--housing-2);list-style:none;
+  box-shadow:0 1px 2px rgba(19,23,26,.07),0 14px 30px -22px rgba(19,23,26,.5)}
 .spec li{display:grid;grid-template-columns:auto minmax(0,13.5rem) minmax(0,1fr);gap:clamp(14px,2.2vw,30px);
-  align-items:baseline;padding:20px 24px;border-top:1px solid #1B2026}
+  align-items:baseline;padding:22px 26px;border-top:1px solid var(--bezel)}
 .spec li:first-child{border-top:0}
-.spec .no{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--ink-3);
+.spec .no{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700;color:var(--ink-3);
   letter-spacing:.06em;padding-top:3px}
 .spec .nm{font-weight:700;font-size:1.02rem;letter-spacing:-0.012em;color:var(--ink)}
-.spec .tx{font-size:14.5px;color:var(--ink-2);line-height:1.58;max-width:60ch}
-.spec .tx code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lit)}
-.spec li.lead{background:linear-gradient(90deg,rgba(255,164,36,.055),transparent 62%);padding:26px 24px}
+.spec .tx{font-size:15px;color:var(--ink-2);line-height:1.6;max-width:58ch}
+.spec .tx code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lit-ink);background:rgba(184,47,13,.09);padding:1px 4px;border-radius:2px}
+.spec li.lead .tx code{color:var(--lit-soft);background:rgba(255,138,100,.14)}
+.spec li.lead{background:var(--deep);color:var(--well-ink);padding:30px 26px}
 .spec li.lead .no{color:var(--lit)}
-.spec li.lead .nm{font-size:1.2rem}
-.spec li.lead .tx{font-size:15.5px;color:var(--ink)}
-.spec .rest{display:block;grid-column:1/-1;padding-top:4px;font-size:13.5px;color:var(--ink-3)}
-.spec .rest b{color:var(--ink-2);font-weight:620}
+.spec li.lead .nm{font-size:1.42rem;color:var(--well-ink)}
+.spec li.lead .tx{font-size:16px;color:var(--well-ink)}
+.spec .rest{display:block;grid-column:1/-1;padding-top:4px;font-size:14.5px;color:var(--ink-2);line-height:1.62;max-width:78ch}
+.spec .rest b{color:var(--ink);font-weight:620}
 @media(max-width:760px){
   .spec li{grid-template-columns:auto minmax(0,1fr);row-gap:8px;padding:18px 18px}
   .spec li.lead{padding:22px 18px}
@@ -261,52 +354,55 @@ main > .plate + .plate > section{border-top:1px solid var(--bezel)}
 /* ---- context gauge: one figure, two marks ---- */
 .gauge{margin-top:30px;border:1px solid var(--bezel);border-radius:var(--r);background:var(--deep);padding:26px 24px 22px}
 .gtop{display:flex;align-items:flex-end;justify-content:space-between;gap:26px;flex-wrap:wrap;margin-bottom:26px}
-.gtop p{font-size:14px;color:var(--ink-2);max-width:40ch;margin-bottom:3px}
+.gtop p{font-size:14px;color:var(--well-ink);max-width:40ch;margin-bottom:3px}
 .gtrack{position:relative;height:30px;background:var(--deep-2);border:1px solid #1E2329;border-radius:2px;
   box-shadow:inset 0 2px 7px rgba(0,0,0,.75)}
+.gtrack > div{width:0;transition:width .95s cubic-bezier(.16,1,.3,1)}
+.gtrack .seg-task{transition-delay:.12s}.gtrack .seg-router{transition-delay:.24s}
+.gmark{opacity:0;transition:opacity .5s ease .7s}.gauge.run .gmark{opacity:1}
 .gtrack .seg-fill{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(135deg,#2A3138 0 8px,#242A31 8px 16px)}
 .gtrack .seg-task{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--lit),var(--lit-soft))}
 .gtrack .seg-router{position:absolute;inset:0 auto 0 0;background:#FFE0B0}
 .gmarks{position:relative;height:46px;margin-top:9px}
 .gmark{position:absolute;top:0;transform:translateX(-1px);padding-left:9px;border-left:1px solid var(--bezel-hi);
-  font-size:12px;color:var(--ink-3);line-height:1.35;white-space:nowrap}
-.gmark b{display:block;font-size:14px;color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums}
+  font-size:12px;color:var(--well-dim);line-height:1.35;white-space:nowrap}
+.gmark b{display:block;font-size:14px;color:var(--well-ink);font-weight:650;font-variant-numeric:tabular-nums}
 .gmark.end{transform:none;right:0;padding-left:0;padding-right:9px;border-left:0;border-right:1px solid var(--bezel-hi);text-align:right;left:auto}
 @media(max-width:640px){.gmarks{height:74px}.gmark:nth-child(2){top:37px}}
 
 
 /* ---- evidence ladder ---- */
 .ladder{display:flex;flex-direction:column;border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep)}
-.rung{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:16px;align-items:center;padding:15px 20px;border-top:1px solid #1B2026}
+.rung{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:16px;align-items:center;padding:15px 20px;border-top:1px solid #22262B}
 .rung:first-child{border-top:0}
 .rung .pip{width:13px;height:13px;border-radius:2px;background:var(--ghost);flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
 .rung.lit .pip{background:var(--lit);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 .rung.ok .pip{background:var(--ok);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
-.rung .nm{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--ink-3);min-width:148px}
+.rung .nm{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--well-dim);min-width:148px}
 .rung.lit .nm{color:var(--lit)}
 .rung.ok .nm{color:var(--ok)}
-.rung .ds{font-size:14px;color:var(--ink-2);min-width:0}
+.rung .ds{font-size:15px;line-height:1.5;color:var(--well-ink);min-width:0;max-width:62ch}
 .rung.off{background:var(--deep-2)}
-.rung.off .ds{color:var(--ink-3)}
+.rung.off .ds{color:var(--well-dim)}
 @media(max-width:620px){.rung{grid-template-columns:auto minmax(0,1fr);row-gap:6px}.rung .ds{grid-column:2}}
 
 /* ---- scripts table ---- */
 .tbl{width:100%;border-collapse:collapse;font-size:14.5px}
-.tbl th{text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:640;padding:0 14px 11px 0;border-bottom:1px solid var(--bezel)}
-.tbl td{padding:12px 14px 12px 0;border-bottom:1px solid #1B2026;vertical-align:baseline}
+.tbl th{text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:0 14px 12px 0;border-bottom:1px solid var(--bezel-lo)}
+.tbl td{padding:14px 14px 14px 0;border-bottom:1px solid var(--bezel);vertical-align:baseline}
 .tbl tr:last-child td{border-bottom:0}
-.tbl .s{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lit);white-space:nowrap}
-.tbl .q{color:var(--ink-2)}
-.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap;padding-right:0}
+.tbl .s{font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600;color:var(--lit-ink);white-space:nowrap}
+.tbl .q{color:var(--ink-2);max-width:56ch}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:650;color:var(--ink);white-space:nowrap;padding-right:0}
 @media(max-width:700px){.tbl .hide-s,.tbl th.hide-s{display:none}}
 
 /* ---- routing ---- */
 .intents{display:flex;flex-wrap:wrap;gap:6px;margin-top:28px}
 .intents span{
   font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-2);
-  background:var(--deep);border:1px solid #1F242A;border-radius:2px;padding:5px 8px;letter-spacing:.01em
+  background:var(--housing-2);border:1px solid var(--bezel);border-radius:2px;padding:5px 8px;letter-spacing:.01em
 }
-.intents span.hot{color:var(--lit);border-color:#4a3410;background:#1d1708}
+.intents span.hot{color:var(--lit-ink);border-color:#D8A693;background:#F8E6E0}
 
 /* ---- install ---- */
 .install-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(20px,3vw,40px)}
@@ -314,48 +410,163 @@ main > .plate + .plate > section{border-top:1px solid var(--bezel)}
   display:flex;align-items:center;gap:12px;background:var(--deep-2);border:1px solid var(--bezel);
   border-radius:var(--r);padding:13px 14px;box-shadow:inset 0 2px 8px rgba(0,0,0,.6);margin-top:12px
 }
-.cmd code{font-family:'JetBrains Mono',monospace;font-size:12.8px;color:var(--ink);overflow-x:auto;white-space:nowrap;flex:1;scrollbar-width:none}
+.cmd code{font-family:'JetBrains Mono',monospace;font-size:12.8px;color:var(--well-ink);overflow-x:auto;white-space:nowrap;flex:1;scrollbar-width:none}
 .cmd code::-webkit-scrollbar{display:none}
 .copy{
-  background:#1a1e23;border:1px solid var(--bezel-hi);color:var(--ink-2);cursor:pointer;flex:none;
+  background:#22272D;border:1px solid #39414A;color:var(--well-dim);cursor:pointer;flex:none;
   border-radius:2px;padding:6px 9px;font-size:11.5px;font-weight:620;letter-spacing:.05em;text-transform:uppercase;
   transition:color .13s,border-color .13s,background .13s
 }
-.copy:hover{color:var(--ink);border-color:#48525c;background:#20252b}
-.copy.done{color:var(--ok);border-color:#2f5c3d}
+.copy:hover{color:var(--well-ink);border-color:#5A6570;background:#2B3138}
+.copy.done{color:var(--ok);border-color:#2F6B45}
 
 /* ---- footer ---- */
-footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px solid var(--bezel-lo);padding:34px 0 40px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+footer{background:var(--deep);color:var(--well-ink);border-top:0;padding:40px 0 46px}
 .foot{display:flex;flex-wrap:wrap;gap:18px 30px;align-items:center;justify-content:space-between}
-.foot a{color:var(--ink-2);text-decoration:none;font-size:13.5px;border-bottom:1px solid transparent}
-.foot a:hover{color:var(--ink);border-bottom-color:var(--lit)}
-.caveat{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--ink-3);line-height:1.65;max-width:84ch}
+.foot a{color:var(--well-dim);text-decoration:none;font-size:13.5px;border-bottom:1px solid transparent}
+.foot a:hover{color:var(--lit);border-bottom-color:var(--lit)}
+.caveat{margin-top:28px;padding-top:24px;border-top:1px solid #2A3138;font-size:13.5px;color:var(--well-dim);line-height:1.7;max-width:70ch}
 
-.note{font-size:13px;color:var(--ink-3);line-height:1.6;margin-top:16px;max-width:72ch}
-.note b{color:var(--ink-2);font-weight:620}
+.note{font-size:14.5px;color:var(--ink-2);line-height:1.62;margin-top:20px;max-width:68ch}
+.note b{color:var(--ink);font-weight:680}
+
+/* ---- the appearance control, which is honest about itself once you press it ---- */
+.theme-btn{
+  flex:none;display:grid;place-items:center;width:34px;height:34px;padding:0;cursor:pointer;
+  border-radius:var(--r);border:1px solid var(--bezel-hi);background:#F4F6F4;color:var(--ink-2);
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+  transition:background .18s ease,border-color .18s ease,color .18s ease
+}
+.theme-btn:hover{background:#fff;border-color:var(--bezel-lo);color:var(--ink)}
+.theme-btn svg{width:17px;height:17px;grid-area:1/1;transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s ease}
+.theme-btn .t-moon{opacity:0;transform:rotate(-70deg) scale(.6)}
+.theme-btn.flip .t-sun{opacity:0;transform:rotate(70deg) scale(.6)}
+.theme-btn.flip .t-moon{opacity:1;transform:none}
+
+.quip{
+  position:absolute;right:var(--gut);top:calc(100% + 10px);max-width:min(23rem,calc(100vw - 2*var(--gut)));
+  background:var(--deep);color:var(--well-ink);border-radius:var(--r);
+  padding:13px 16px;font-size:14px;line-height:1.5;
+  box-shadow:0 14px 30px -12px rgba(19,23,26,.6);
+  opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:opacity .22s ease,transform .32s cubic-bezier(.16,1,.3,1)
+}
+.quip::before{content:"";position:absolute;right:30px;top:-6px;width:12px;height:12px;background:var(--deep);transform:rotate(45deg)}
+.quip.show{opacity:1;transform:none}
+.quip b{color:var(--lit);font-weight:700}
+
+/* ---- the coffee tab ---- */
+.coffee{
+  position:fixed;right:clamp(14px,2.4vw,26px);bottom:clamp(14px,2.4vw,26px);z-index:60;
+  display:inline-flex;align-items:center;gap:0;overflow:hidden;text-decoration:none;
+  height:50px;padding:0 15px;border-radius:25px;
+  background:#FFDD00;color:#1C1200;border:1px solid #E0C200;
+  box-shadow:0 6px 20px -8px rgba(19,23,26,.45);
+  transition:gap .32s cubic-bezier(.16,1,.3,1),padding .32s cubic-bezier(.16,1,.3,1),
+             background .2s ease,transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s ease
+}
+.coffee svg{width:21px;height:21px;flex:none;color:#1C1200}
+.coffee-t{
+  max-width:0;opacity:0;white-space:nowrap;font-size:14.5px;font-weight:700;letter-spacing:-0.01em;
+  transition:max-width .34s cubic-bezier(.16,1,.3,1),opacity .24s ease
+}
+.coffee:hover,.coffee:focus-visible{background:#FFE747;transform:translateY(-2px);gap:10px;
+  box-shadow:0 10px 26px -10px rgba(19,23,26,.5)}
+.coffee:hover .coffee-t,.coffee:focus-visible .coffee-t{max-width:12rem;opacity:1}
+@media(max-width:620px){
+  .coffee{height:46px;padding:0 13px}
+  .coffee:hover .coffee-t,.coffee:focus-visible .coffee-t{max-width:9rem}
+}
+
+/* ---- motion ---- */
+/* Reveals only arm once JS confirms it can drive them, so without JS nothing is ever hidden. */
+.js [data-rv]{opacity:0;transform:translateY(16px);
+  transition:opacity .62s cubic-bezier(.16,1,.3,1),transform .62s cubic-bezier(.16,1,.3,1);
+  transition-delay:var(--d,0ms)}
+.js [data-rv].in{opacity:1;transform:none}
+
+/* the printout keeps feeding out of the slot */
+.tape-feed{animation:feed 46s linear infinite}
+.tape:hover .tape-feed,.tape:focus-within .tape-feed{animation-play-state:paused}
+@keyframes feed{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.tape::after{content:"";position:absolute;left:0;right:0;top:0;height:34px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,255,255,0))}
+
+/* lamps and segments settle mechanically, never with a glow */
+.rung .pip{transition:background .18s steps(1)}
+.js .ladder .rung .pip{background:var(--ghost)}
+.js .ladder.run .rung.lit .pip{background:var(--lit)}
+.js .ladder.run .rung.ok .pip{background:var(--ok)}
+.js .ladder .rung .nm{color:var(--well-dim);transition:color .18s steps(1)}
+.js .ladder.run .rung.lit .nm{color:var(--lit)}
+.js .ladder.run .rung.ok .nm{color:var(--ok)}
+.js .ladder .rung{transition-delay:var(--d,0ms)}
+.js .ladder.run .rung .pip,.js .ladder.run .rung .nm{transition-delay:var(--d,0ms)}
+
+/* chips ignite after the bank settles */
+.js .intents span{transition:color .2s steps(1),border-color .2s steps(1),background .2s steps(1);transition-delay:var(--d,0ms)}
+.js .intents span.hot{color:var(--ink-2);border-color:var(--bezel);background:var(--housing-2)}
+.js .intents.run span.hot{color:var(--lit-ink);border-color:#D8A693;background:#F8E6E0}
+
+/* table rows answer the pointer */
+.tbl tbody tr{transition:background .16s ease}
+.tbl tbody tr:hover{background:var(--housing-2)}
+.tbl tbody tr td:first-child{position:relative}
+.tbl tbody tr td:first-child::before{content:"";position:absolute;left:-14px;top:6px;bottom:6px;width:2px;
+  background:var(--lit-ink);transform:scaleY(0);transform-origin:top;transition:transform .24s cubic-bezier(.16,1,.3,1)}
+.tbl tbody tr:hover td:first-child::before{transform:scaleY(1)}
+
+/* selector and chips lift a little */
+.selector button{transition:color .13s,background .13s,transform .13s}
+.selector button:active{transform:translateY(1px)}
+.intents span{transition:border-color .18s ease,color .18s ease}
+.intents span:hover{border-color:var(--bezel-lo);color:var(--ink)}
+.cell{transition:background .2s ease}
+.cell:hover{background:rgba(255,255,255,.035)}
 
 @media (prefers-reduced-motion: reduce){
-  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  .js [data-rv]{opacity:1 !important;transform:none !important}
+  .theme-btn svg{transition:none !important}
+  .tape-feed{animation:none !important}
+  .booted .hdr-scan,.booted .pill-tag::after{animation:none !important}
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;transition-delay:0s !important;animation-delay:0s !important}
 }
 </style>
 </head>
 <body>
 
-<header>
+<header id="hdr">
   <div class="plate bar">
-    <a class="mark" href="#top"><span class="lamp" aria-hidden="true"></span><b>Data Intelligence Engine</b></a>
-    <nav>
-      <a href="#rule4" class="hide-s">What it sends</a>
-      <a href="#rules" class="hide-s">Rules</a>
-      <a href="#evidence">Evidence</a>
-      <a href="#scripts" class="hide-s">Scripts</a>
-      <a href="#install">Install</a>
+    <a class="mark" href="#top"><svg class="logo" viewBox="0 0 28 28" aria-hidden="true"><rect class="lg-plate" x="0.75" y="0.75" width="26.5" height="26.5" rx="5.5"/><rect class="lg-row" x="6" y="6.5" width="16" height="2.6" rx="1.3"/><rect class="lg-row" x="6" y="11.4" width="16" height="2.6" rx="1.3"/><rect class="lg-row" x="6" y="16.3" width="10" height="2.6" rx="1.3"/><rect class="lg-out" x="6" y="21.2" width="16" height="2.6" rx="1.3"/></svg><b>Data Intelligence Engine</b></a>
+
+    <a class="pill" href="#rule4">
+      <span class="pill-tag">live</span>
+      <span class="pill-text"><span class="pill-fact" id="pill-fact"></span></span>
+      <svg class="pill-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+
+    <nav aria-label="primary" class="navwrap">
+      <span class="navmark" aria-hidden="true"></span>
+      <a href="#rule4" class="hide-m">what it sends</a>
+      <a href="#scale">at scale</a>
+      <a href="#rules" class="hide-s">rules</a>
+      <a href="#evidence" class="hide-s">evidence</a>
+      <a href="#scripts" class="hide-m">scripts</a>
+      <a href="#install">install</a>
+      <button class="theme-btn" id="theme-btn" aria-label="Appearance">
+        <svg class="t-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.6v2.3M12 19.1v2.3M21.4 12h-2.3M4.9 12H2.6M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6L17 17M7 7 5.4 5.4"/></svg>
+        <svg class="t-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.8 8.8 0 1 0 10.8 10.8Z"/></svg>
+      </button>
       <a class="ghost-btn" href="https://github.com/jainrakshit24/data-intelligence-engine">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-        GitHub
+        <span class="gh-t">github</span>
       </a>
     </nav>
   </div>
+  <span class="hdr-scan" aria-hidden="true"></span>
+  <span class="progress" id="progress" aria-hidden="true"></span>
+  <div class="quip" id="quip" role="status" aria-live="polite"></div>
 </header>
 
 <main class="rail" id="top">
@@ -364,8 +575,8 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
 <div class="plate">
 <section class="hero">
   <div class="claim">
-    <h1><span class="lit-line">The model never sees your rows.</span><span class="dim">Only what they add up to.</span></h1>
-    <p class="lede">An Agent Skill that takes a data problem in plain words, works out what to do with it, runs the checks, and reports what it found. Every claim is graded by the evidence behind it, and every number carries how much data it covered.</p>
+    <h1><span class="lit-line">The model never sees your rows.</span><span class="dim"><i>Only what they add up to.</i></span></h1>
+    <p class="lede">Describe a data problem in your own words. The skill works out what to check, runs the checks, and tells you what it found &mdash; with every claim graded by the evidence behind it, and every number saying how much of your data it actually covered.</p>
 
     <div class="actions">
       <button class="key" data-copy="/plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine" aria-label="Copy the Claude Code install command">
@@ -375,13 +586,15 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
       <span class="alt-install">or anywhere else &mdash; <code>npx skills add jainrakshit24/data-intelligence-engine</code></span>
     </div>
     <p class="note">Then <code class="mono">pip install duckdb sqlglot</code>. Your agent picks the skill up by name and uses it when a request fits. <b>You never invoke it by hand.</b></p>
+
+    <p class="proof"><span class="proof-n">20,000,000</span> rows profiled on one laptop. <b>4,055 characters</b> came back. <a href="#scale">The run &darr;</a></p>
   </div>
 
   <figure class="printer">
     <div class="slot" aria-hidden="true"></div>
     <div class="tape">
       <div class="perf" style="top:0" aria-hidden="true"></div>
-      <pre id="tape-out" aria-label="Verbatim output of a real profile_dataset run"></pre>
+      <div class="tape-feed"><pre id="tape-out" aria-label="Output of a real profile_dataset run"></pre><pre id="tape-out2" aria-hidden="true"></pre></div>
     </div>
     <figcaption>
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.6 2 4.4v4c0 3.3 2.5 5.3 6 6 3.5-.7 6-2.7 6-6v-4L8 1.6Z"/><path d="m5.6 8 1.7 1.8L10.6 6.4"/></svg>
@@ -392,13 +605,13 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
 
 <!-- readout strip -->
 <div class="strip" id="strip">
-  <div class="cell"><div class="segrow" data-seg="27"></div><span class="tiny">Intents routed</span></div>
-  <div class="cell"><div class="segrow" data-seg="52"></div><span class="tiny">Methodology modules</span></div>
+  <div class="cell"><div class="segrow" data-seg="27"></div><span class="tiny">Kinds of request</span></div>
+  <div class="cell"><div class="segrow" data-seg="52"></div><span class="tiny">Method modules</span></div>
   <div class="cell"><div class="segrow" data-seg="11"></div><span class="tiny">Scripts</span></div>
   <div class="cell"><div class="segrow" data-seg="138"></div><span class="tiny">Tests passing</span></div>
   <div class="cell dark">
     <div class="segrow dead" data-seg="--" data-dead="1"></div>
-    <span class="tiny lbl-off">Never lit: NOT_VERIFIED</span>
+    <span class="tiny lbl-off">Could not run: NOT_VERIFIED</span>
   </div>
 </div>
 </div>
@@ -408,38 +621,81 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
 <section id="rule4">
   <div class="r4">
     <div>
-      <h2>Five million rows cost eleven percent more than ten thousand.</h2>
-      <p class="lede" style="margin-top:20px">Opening a data file into an agent's context sends its rows to the model provider. This skill does not do it. The scripts read the file; the model receives the aggregates. What the model receives barely moves when the data grows five hundred times.</p>
-      <p class="note">Pick a size and watch the second bar fail to move.</p>
+      <h2>The file is 2.3&nbsp;GB. What the model reads is 3,473 characters.</h2>
+      <p class="lede" style="margin-top:20px">When an agent opens a data file, every row in it goes to the model provider. This skill never does that. The scripts read the file and hand over only the totals &mdash; and what gets handed over stays almost the same size however big the file is.</p>
+      <p class="note">Change the dataset size below. Watch the second bar stay where it is.</p>
       <div class="selector" role="group" aria-label="Dataset size" style="margin-top:20px">
+        <span class="knob" aria-hidden="true"></span>
         <button data-i="0" aria-pressed="false">10K rows</button>
         <button data-i="1" aria-pressed="false">100K</button>
         <button data-i="2" aria-pressed="false">1M</button>
-        <button data-i="3" aria-pressed="true">5M</button>
+        <button data-i="3" aria-pressed="false">5M</button>
+        <button data-i="4" aria-pressed="true">20M</button>
       </div>
     </div>
 
     <div>
       <div class="ratio">
-        <span class="tiny" style="color:var(--ink-3)">Smaller than reading the file</span>
-        <div class="segrow" id="ratio-seg" style="--h:46px"></div>
-        <span class="small" id="ratio-note" style="color:var(--ink-3)"></span>
+        <span class="tiny" style="color:var(--well-dim)">Times smaller than opening the file</span>
+        <div class="segrow" id="ratio-seg" style="--h:clamp(44px,5.4vw,74px)"></div>
+        <span class="small" id="ratio-note" style="color:var(--well-dim)"></span>
       </div>
 
       <div class="scalebar">
         <div class="meter">
-          <div class="mh"><b>If the agent read the file</b><span id="m-file"></span></div>
+          <div class="mh"><b>The file, if the agent opened it</b><span id="m-file"></span></div>
           <div class="track"><div class="fill file" id="f-file"></div></div>
         </div>
         <div class="meter">
-          <div class="mh"><b>What this skill sends instead</b><span id="m-out"></span></div>
+          <div class="mh"><b>The report the model actually gets</b><span id="m-out"></span></div>
           <div class="track"><div class="fill out" id="f-out"></div></div>
         </div>
         <p class="small" id="r4-foot"></p>
       </div>
     </div>
   </div>
-  <p class="note"><b>How these were measured.</b> Bars are drawn on a logarithmic scale, because a linear one would render the second bar invisible. Token counts use <code class="mono">tiktoken o200k_base</code> as a proxy, since Claude's tokenizer is not public, so they are exact for comparison and roughly &plusmn;10% in absolute terms. The 10,000-row file was counted exactly; the three larger file figures are extrapolated from it and are labelled as estimates throughout.</p>
+  <p class="note"><b>How these were measured.</b> Bars are drawn on a logarithmic scale, because a linear one would render the second bar invisible. Token counts use <code class="mono">tiktoken o200k_base</code> as a proxy, since Claude's tokenizer is not public, so they are exact for comparison and roughly &plusmn;10% in absolute terms. The 10,000-row and 20,000,000-row files were counted exactly; the three in between are scaled from those counts.</p>
+</section>
+</div>
+
+<!-- ============ AT SCALE ============ -->
+<div class="plate">
+<section id="scale">
+  <h2 style="max-width:24ch">Twenty million rows in. A four-thousand-character report out.</h2>
+  <p class="lede" style="margin-top:20px">Every figure below came from one run on one laptop, against a 12-column table built for this page.
+  The file was 2.3&nbsp;GB. The last cell is all the model ever saw.</p>
+
+  <div class="bank">
+    <div class="well">
+      <div class="segrow" data-seg="20,000,000" style="--h:clamp(26px,2.5vw,34px)"></div>
+      <span class="tiny">Rows profiled</span>
+    </div>
+    <div class="well">
+      <div class="segrow" data-seg="2,294" style="--h:clamp(30px,3vw,40px)"></div>
+      <span class="tiny">Megabytes on disk</span>
+    </div>
+    <div class="well">
+      <div class="segrow" data-seg="206.5" style="--h:clamp(30px,3vw,40px)"></div>
+      <span class="tiny">Seconds from start to report</span>
+    </div>
+    <div class="well">
+      <div class="segrow" data-seg="1,567" style="--h:clamp(30px,3vw,40px)"></div>
+      <span class="tiny">Megabytes of memory, peak</span>
+    </div>
+    <div class="well lit-well">
+      <div class="segrow" data-seg="1,392" style="--h:clamp(30px,3vw,40px)"></div>
+      <span class="tiny">Tokens the model got</span>
+    </div>
+  </div>
+  <p class="bank-note"><b>1,392 tokens, for twenty million rows.</b> That is the whole report: column types, null rates, distinct counts, date ranges, PII flags, key candidates and
+  every risk trigger. It is 4,055 characters of text. Open that file in an agent instead and you would send it roughly
+  <span class="num">1.1 billion</span> tokens. (We counted the first 200,000 rows exactly and scaled up;
+  encoding all 2.3&nbsp;GB just to prove the point seemed excessive.)</p>
+
+  <p class="note"><b>What this run was.</b> <code class="mono">profile_dataset.py</code> against a generated
+  12-column orders table, 20,000,000 rows, 2,294.3&nbsp;MB, on the author's laptop. Wall time from a monotonic
+  clock; the memory figure is the peak across the whole set of four scripts, not this one alone. The table is
+  synthetic and uniform, so real data with wide text columns will be slower. Nothing here is extrapolated.</p>
 </section>
 </div>
 
@@ -480,7 +736,7 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
 <div class="plate">
 <section id="evidence">
   <h2 style="max-width:24ch">Nothing is called a cause until a check supports it.</h2>
-  <p class="lede" style="margin:20px 0 32px">Below <code class="mono" style="color:var(--ok)">CONFIRMED</code> the report may say <em>likely</em>, <em>consistent with</em> or <em>requires verification</em>. Never <em>caused by</em>.</p>
+  <p class="lede" style="margin:20px 0 32px">Below <code class="mono" style="color:var(--ok-ink)">CONFIRMED</code> the report may say <em>likely</em>, <em>consistent with</em> or <em>requires verification</em>. Never <em>caused by</em>.</p>
 
   <div class="ladder">
     <div class="rung lit"><span class="pip" aria-hidden="true"></span><span class="nm">OBSERVATION</span><span class="ds">Measured. The number is in the output and you can recount it.</span></div>
@@ -490,28 +746,28 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
     <div class="rung off"><span class="pip" aria-hidden="true"></span><span class="nm">NOT_VERIFIED</span><span class="ds">The check could not run. The cell never lights, and the finding is never promoted.</span></div>
   </div>
 
-  <p class="note"><b>A score always travels with its grade.</b> The run above returned <code class="mono" style="color:var(--lit)">94.5/100 PROVISIONAL (4 of 6 dimensions measured)</code>. Provisional because every check was inferred rather than confirmed against your business rules. The skill will not quietly drop the word.</p>
+  <p class="note"><b>A score always travels with its grade.</b> The run above returned <code class="mono" style="color:var(--lit-ink)">94.5/100 PROVISIONAL (4 of 6 dimensions measured)</code>. Provisional because every check was inferred rather than confirmed against your business rules. The skill will not quietly drop the word.</p>
 </section>
 </div>
 
 <!-- ============ ROUTING ============ -->
 <div class="plate">
 <section id="routing">
-  <h2 style="max-width:26ch">A thin router. Everything else loads only when an intent names it.</h2>
-  <p class="lede" style="margin-top:20px">One request routes to as many intents as apply. <em>&ldquo;My daily customer pipeline has 30% fewer records, find out why&rdquo;</em> is a quality check, an anomaly scan, a pipeline debug and an investigation at once, and still reads a fraction of the corpus.</p>
+  <h2 style="max-width:28ch">It reads one small file every time. The rest loads only if your question needs it.</h2>
+  <p class="lede" style="margin-top:20px">A single question can match several kinds of work at once. <em>&ldquo;My daily customer pipeline has 30% fewer records, find out why&rdquo;</em> is a quality check, an anomaly scan, a pipeline debug and an investigation together &mdash; and it still opens only a fraction of the methodology.</p>
 
   <div class="gauge">
     <div class="gtop">
       <p>The whole corpus is 43,644 tokens. This is the most any single task has ever drawn from it.</p>
       <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
-        <div class="segrow" data-seg="26.3" style="--h:40px"></div>
-        <span class="tiny" style="color:var(--ink-3)">Per cent, at the very worst</span>
+        <div class="segrow" data-seg="26.3" style="--h:clamp(38px,4.2vw,54px)"></div>
+        <span class="tiny" style="color:var(--well-dim)">Per cent of it, at the very worst</span>
       </div>
     </div>
     <div class="gtrack" role="img" aria-label="Of 43,644 tokens in the corpus, the router loads 3,347 every time and the heaviest real task loads 12,357 in total, which is 26.3 per cent.">
-      <div class="seg-fill" style="width:100%"></div>
-      <div class="seg-task" style="width:28.3%"></div>
-      <div class="seg-router" style="width:7.7%"></div>
+      <div class="seg-fill" data-w="100"></div>
+      <div class="seg-task" data-w="28.3"></div>
+      <div class="seg-router" data-w="7.7"></div>
     </div>
     <div class="gmarks">
       <div class="gmark" style="left:7.7%"><b>3,347</b>router, every time</div>
@@ -521,20 +777,23 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
   </div>
 
   <div class="intents" id="intents"></div>
-  <p class="note">Highlighted are the four intents that one sentence above routes to simultaneously. Token figures carry the same <code class="mono">o200k_base</code> proxy caveat as the rest of this page.</p>
+  <p class="note">The four highlighted above are the ones that single question matches. Token figures carry the same <code class="mono">o200k_base</code> caveat as the rest of this page.</p>
 </section>
 </div>
 
 <!-- ============ SCRIPTS ============ -->
 <div class="plate">
 <section id="scripts">
-  <h2 style="max-width:24ch">They run for you. They also run on their own.</h2>
-  <p class="lede" style="margin:20px 0 34px">Every one prints aggregates and a <code class="mono">COVERAGE:</code> line. None prints raw rows by default.</p>
+  <h2 style="max-width:26ch">The skill runs these for you. You can also run them yourself.</h2>
+  <p class="lede" style="margin:20px 0 34px">Each one prints totals and a <code class="mono">COVERAGE:</code> line saying how much it read. None of them prints your actual rows.</p>
   <table class="tbl">
     <thead><tr><th>Script</th><th>What it answers</th><th class="n hide-s">Measured</th></tr></thead>
     <tbody id="scripts-body"></tbody>
   </table>
-  <p class="note"><b>About those timings.</b> Measured on the author's laptop against synthetic, uniform data where only the row count was varied, never column count or width, so real wide data will be slower. Peak memory ran 1.0&ndash;1.5&nbsp;GB at five million rows.</p>
+  <p class="note"><b>About those timings.</b> The four marked <span class="num">20,000,000</span> were measured
+  on a 2,294&nbsp;MB generated table on the author's laptop; the rest come from smaller fixtures. Peak memory
+  across that whole set was <span class="num">1,567&nbsp;MB</span>. The data is synthetic and uniform, with
+  twelve columns, so a real table with wide text will be slower. Nothing in this column is extrapolated.</p>
 </section>
 </div>
 
@@ -584,12 +843,21 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
 
 </main>
 
+<a class="coffee" href="https://buymeacoffee.com/jainrakshit" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9h12v6.5A4.5 4.5 0 0 1 11.5 20h-3A4.5 4.5 0 0 1 4 15.5Z"/>
+    <path d="M16 10.5h1.8a2.6 2.6 0 0 1 0 5.2H16"/>
+    <path d="M7.4 5.6c0-.9.9-1.1.9-2M10.6 5.6c0-.9.9-1.1.9-2M13.8 5.6c0-.9.9-1.1.9-2"/>
+  </svg>
+  <span class="coffee-t">Buy me a coffee</span>
+</a>
+
 <footer>
   <div class="plate">
     <div class="foot">
       <div style="display:flex;align-items:center;gap:11px">
         <span class="screw" aria-hidden="true"></span>
-        <span class="small" style="color:var(--ink-2)">Data Intelligence Engine &middot; v0.4.0 &middot; MIT</span>
+        <span class="small" style="color:var(--well-dim)">Data Intelligence Engine &middot; v0.4.0 &middot; MIT</span>
       </div>
       <div style="display:flex;gap:26px;flex-wrap:wrap">
         <a href="https://github.com/jainrakshit24/data-intelligence-engine">Repository</a>
@@ -597,7 +865,7 @@ footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px so
         <a href="https://github.com/jainrakshit24/data-intelligence-engine/blob/main/LICENSE">Licence</a>
       </div>
     </div>
-    <p class="caveat"><b style="color:var(--ink-2)">Every figure on this page comes from a run.</b> Token counts are measured with <code class="mono">tiktoken o200k_base</code> as a proxy for Claude's tokenizer, which is not public: exact for comparing one intent against another, roughly &plusmn;10% in absolute terms. Speed and memory come from a single laptop whose wall time drifts with thermal throttling across a session, so read the shape and not the seconds. The scaling datasets are synthetic and uniform. There are no install counts, stars, users or benchmarks against other tools on this page because none have been measured.</p>
+    <p class="caveat"><b style="color:var(--well-ink)">Every figure on this page comes from a run.</b> Token counts are measured with <code class="mono">tiktoken o200k_base</code> as a proxy for Claude's tokenizer, which is not public: exact for comparing one intent against another, roughly &plusmn;10% in absolute terms. Speed and memory come from a single laptop whose wall time drifts with thermal throttling across a session, so read the shape and not the seconds. The scaling datasets are synthetic and uniform. There are no install counts, stars, users or benchmarks against other tools on this page because none have been measured.</p>
   </div>
 </footer>
 <script>
@@ -653,82 +921,246 @@ function paint(row, text, dead){
   row.setAttribute("aria-label", label.replace(/×/g, " times"));
 }
 
-/* the one authored moment: the panel runs a lamp self-test, then settles */
+/* readouts count up to their value, the way a counter on a real panel settles */
 function selfTest(row, finalText, dead){
-  if (RM){ paint(row, finalText, dead); return; }
-  const frames = ["8", "8", finalText];
-  let i = 0;
-  paint(row, "8".repeat(String(finalText).replace(/[^0-9-]/g, "").length) || "8", dead);
-  const tick = () => {
-    i++;
-    if (i >= frames.length){ paint(row, finalText, dead); return; }
-    row.querySelectorAll("polygon").forEach(p => {
-      p.setAttribute("class", Math.random() > 0.35 ? "on" : "off");
-    });
-    setTimeout(tick, 110);
+  if (RM || dead){ paint(row, finalText, dead); return; }
+  const label = String(finalText);
+  const digits = label.replace(/[^0-9.]/g, "");
+  const target = parseFloat(digits);
+  if (!isFinite(target) || target === 0){ paint(row, label, dead); return; }
+  const decimals = (digits.split(".")[1] || "").length;
+  const group = label.includes(",");
+  const suffix = label.replace(/[0-9.,]/g, "");
+  const fmtN = v => {
+    const s = v.toFixed(decimals);
+    return (group ? Number(s).toLocaleString("en-US",
+      { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) : s) + suffix;
   };
-  setTimeout(tick, 90);
+  const ms = 820, t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0) / ms);
+    /* ease out hard, so it races then settles */
+    const v = target * (1 - Math.pow(1 - k, 4));
+    paint(row, fmtN(k < 1 ? v : target), false);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  paint(row, fmtN(0), false);
+  requestAnimationFrame(step);
 }
 
-const booted = new WeakSet();
-const io = new IntersectionObserver(entries => {
+document.documentElement.classList.add("js");
+requestAnimationFrame(() => document.documentElement.classList.add("booted"));
+
+const seen = new WeakSet();
+/* one observer, several jobs: the panel wakes a module up as it comes into view */
+const wake = new IntersectionObserver(entries => {
   for (const e of entries){
-    if (!e.isIntersecting || booted.has(e.target)) continue;
-    booted.add(e.target);
-    const row = e.target;
-    selfTest(row, row.dataset.seg, row.dataset.dead === "1");
+    if (!e.isIntersecting || seen.has(e.target)) continue;
+    seen.add(e.target);
+    const el = e.target;
+    if (el.hasAttribute("data-rv")) el.classList.add("in");
+    if (el.hasAttribute("data-seg")) selfTest(el, el.dataset.seg, el.dataset.dead === "1");
+    if (el.classList.contains("ladder") || el.classList.contains("intents")) el.classList.add("run");
+    if (el.id === "rule4") showR4(current, true);
+    if (el.classList.contains("gauge")) el.classList.add("run");
   }
-}, { threshold: 0.4 });
+}, { threshold: 0.25, rootMargin: "0px 0px -8% 0px" });
+
 document.querySelectorAll("[data-seg]").forEach(r => {
   paint(r, r.dataset.seg, r.dataset.dead === "1");
-  if (r.dataset.dead !== "1") io.observe(r);
+  if (r.dataset.dead !== "1") wake.observe(r);
 });
+
+/* give every section's children a staggered reveal without hiding anything from a no-JS reader */
+document.querySelectorAll("main section").forEach(sec => {
+  const kids = [...sec.children].filter(k => !k.classList.contains("strip"));
+  kids.forEach((k, i) => {
+    k.setAttribute("data-rv", "");
+    k.style.setProperty("--d", Math.min(i, 5) * 70 + "ms");
+    wake.observe(k);
+  });
+});
+document.querySelectorAll(".strip .cell").forEach((c, i) => {
+  c.setAttribute("data-rv", "");
+  c.style.setProperty("--d", i * 80 + "ms");
+  wake.observe(c);
+});
+document.querySelectorAll(".ladder .rung").forEach((r, i) => r.style.setProperty("--d", 140 + i * 190 + "ms"));
+document.querySelectorAll(".intents span.hot").forEach((s, i) => s.style.setProperty("--d", 520 + i * 130 + "ms"));
+[".ladder", ".intents", ".gauge", "#rule4"].forEach(sel => {
+  const el = document.querySelector(sel);
+  if (el) wake.observe(el);
+});
+
+/* ---------- the header does the navigating ---------- */
+const hdr = document.getElementById("hdr");
+const bar = document.getElementById("progress");
+const navLinks = [...document.querySelectorAll("nav a[href^='#']")];
+const navMark = document.querySelector(".navmark");
+
+function placeMark(link){
+  if (!link || getComputedStyle(link).display === "none"){ navMark.style.opacity = "0"; return; }
+  const n = link.getBoundingClientRect(), p = link.parentElement.getBoundingClientRect();
+  navMark.style.width = n.width + "px";
+  navMark.style.transform = "translateX(" + (n.left - p.left) + "px)";
+  navMark.style.opacity = "1";
+}
+
+function syncHeader(){
+  hdr.classList.toggle("stuck", scrollY > 24);
+  const max = document.documentElement.scrollHeight - innerHeight;
+  bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, scrollY / max) : 0) + ")";
+
+  /* the section whose top has most recently passed under the header is the one you are reading;
+     narrow screens hide some links, so only the ones actually on screen can be marked */
+  const shown = navLinks.filter(a => a.offsetParent !== null);
+  let here = null;
+  for (const a of shown){
+    const sec = document.querySelector(a.getAttribute("href"));
+    if (sec && sec.getBoundingClientRect().top <= 140) here = a;
+  }
+  navLinks.forEach(a => a.classList.toggle("here", a === here));
+  placeMark(here);
+}
+let ticking = false;
+addEventListener("scroll", () => {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => { syncHeader(); ticking = false; });
+}, { passive: true });
+addEventListener("resize", syncHeader, { passive: true });
+syncHeader();
+
+/* ---------- the pill says one true thing at a time ---------- */
+const FACTS = [
+  ['20,000,000', ' rows profiled in ', '206 seconds', ''],
+  ['2.3 GB', ' of data in, ', '1,392', ' tokens out'],
+  ['Your rows', ' stay on your machine. ', 'Only the totals', ' go out']
+];
+const factEl = document.getElementById("pill-fact");
+let fi = 0;
+function renderFact(i){
+  const [a, mid, b, tail] = FACTS[i];
+  factEl.innerHTML = '<b>' + a + '</b>' + mid + '<b>' + b + '</b>' + tail +
+    '<span class="pill-sep" aria-hidden="true"> · </span><span class="pill-tail">see how it was measured</span>';
+}
+renderFact(0);
+if (!RM) setInterval(() => {
+  factEl.classList.add("out");
+  setTimeout(() => {
+    fi = (fi + 1) % FACTS.length;
+    renderFact(fi);
+    factEl.classList.remove("out");
+    factEl.classList.add("in");
+    setTimeout(() => factEl.classList.remove("in"), 460);
+  }, 320);
+}, 4200);
+
+/* ---------- the appearance control ----------
+   It flips its icon, says something, and changes nothing else. That is the whole feature.
+   The page has one painted finish and it keeps it. */
+const QUIPS = [
+  "A control that pretends to have done something is worse than one that tells you it did not.",
+  "<b>COVERAGE:</b> 0/1 themes switched · strategy: none · filters: none",
+  "<b>NOT_VERIFIED.</b> The check ran. Nothing changed. The report says so.",
+  "Dark mode is already on. Look inside any readout.",
+  "Repainting the panel is out of scope, on purpose.",
+  "<b>Measured:</b> 1 click, 0 pixels repainted.",
+  "This instrument ships in one finish. The data is the part that varies.",
+  "Inferred intent: dark mode. Confirmed intent: none. Grading as <b>HYPOTHESIS</b>.",
+  "You pressed it. It moved. That is the extent of the contract.",
+  "Every other number on this page is real. This button is the one joke."
+];
+const themeBtn = document.getElementById("theme-btn");
+const quip = document.getElementById("quip");
+let lastQuip = -1, quipTimer;
+themeBtn.addEventListener("click", () => {
+  themeBtn.classList.toggle("flip");
+  let i = Math.floor(Math.random() * QUIPS.length);
+  if (i === lastQuip) i = (i + 1) % QUIPS.length;   /* never the same line twice running */
+  lastQuip = i;
+  quip.innerHTML = QUIPS[i];
+  quip.classList.add("show");
+  clearTimeout(quipTimer);
+  quipTimer = setTimeout(() => quip.classList.remove("show"), 4200);
+});
+document.addEventListener("click", e => {
+  if (!quip.contains(e.target) && e.target !== themeBtn && !themeBtn.contains(e.target))
+    quip.classList.remove("show");
+});
+
+/* ---------- the dataset switch slides ---------- */
+const knob = document.querySelector(".selector .knob");
+function placeKnob(){
+  const on = document.querySelector(".selector button[aria-pressed=true]");
+  if (!on || !knob) return;
+  const b = on.getBoundingClientRect(), p = on.parentElement.getBoundingClientRect();
+  knob.style.width = b.width + "px";
+  knob.style.transform = "translateX(" + (b.left - p.left) + "px)";
+}
+addEventListener("resize", placeKnob, { passive: true });
 
 /* ---------- rule 4: measured, four points ---------- */
 const R4 = [
-  { rows: "10,000",    fileTok: 352440,    outTok: 767, mb: 0.77,  exact: true  },
-  { rows: "100,000",   fileTok: 3544831,   outTok: 822, mb: 7.8,   exact: false },
-  { rows: "1,000,000", fileTok: 35753957,  outTok: 843, mb: 78.8,  exact: false },
-  { rows: "5,000,000", fileTok: 178770948, outTok: 855, mb: 394.0, exact: false }
+  { rows: "10,000",     fileCh: 770598,     outCh: 2625, mb: 0.77,   tok: 767,  exact: true  },
+  { rows: "100,000",    fileCh: 7812911,    outCh: 2644, mb: 7.8,    tok: 822,  exact: false },
+  { rows: "1,000,000",  fileCh: 78802766,   outCh: 2678, mb: 78.8,   tok: 843,  exact: false },
+  { rows: "5,000,000",  fileCh: 394016387,  outCh: 2682, mb: 394.0,  tok: 855,  exact: false },
+  { rows: "20,000,000", fileCh: 2294323305, outCh: 3473, mb: 2294.3, tok: 1392, exact: true  }
 ];
 const fmt = n => n.toLocaleString("en-US");
 const L = n => Math.log10(Math.max(n, 1));
-const LMAX = L(R4[3].fileTok);
+const LMAX = L(R4[4].fileCh);
 
 const mFile = document.getElementById("m-file"), mOut = document.getElementById("m-out");
 const fFile = document.getElementById("f-file"), fOut = document.getElementById("f-out");
 const foot  = document.getElementById("r4-foot"), rSeg = document.getElementById("ratio-seg");
 const rNote = document.getElementById("ratio-note");
 
-function showR4(i){
+let current = 4, revealed = false;
+function showR4(i, firstSight){
+  current = i;
+  if (firstSight) revealed = true;
   const d = R4[i];
-  const ratio = Math.round(d.fileTok / d.outTok);
-  mFile.textContent = fmt(d.fileTok) + " tokens" + (d.exact ? "" : " (est.)");
-  mOut.textContent  = fmt(d.outTok) + " tokens";
-  fFile.style.width = (L(d.fileTok) / LMAX * 100) + "%";
-  fOut.style.width  = (L(d.outTok)  / LMAX * 100) + "%";
-  foot.innerHTML = "A " + d.mb.toLocaleString("en-US") + "&nbsp;MB file. The profile that comes back is the same two and a half thousand characters it is at every size.";
+  const ratio = Math.round(d.fileCh / d.outCh);
+  mFile.textContent = fmt(d.fileCh) + " characters";
+  mOut.textContent  = fmt(d.outCh) + " characters";
+  if (revealed){
+    fFile.style.width = (L(d.fileCh) / LMAX * 100) + "%";
+    fOut.style.width  = (L(d.outCh)  / LMAX * 100) + "%";
+  }
+  foot.innerHTML = "A " + fmt(d.mb) + "&nbsp;MB file of " + d.rows + " rows. The report that comes back is "
+    + fmt(d.outCh) + " characters"
+    + (d.tok ? ", about " + fmt(d.tok) + " tokens." : ".");
   paint(rSeg, fmt(ratio) + "×");
-  rNote.textContent = d.exact
-    ? "Counted exactly, both sides."
-    : "File side extrapolated from the exact 10,000-row count.";
+  rNote.textContent = "Both sides counted, not estimated.";
 }
 document.querySelectorAll(".selector button").forEach(b => {
   b.addEventListener("click", () => {
     document.querySelectorAll(".selector button").forEach(o => o.setAttribute("aria-pressed", "false"));
     b.setAttribute("aria-pressed", "true");
+    placeKnob();
     showR4(+b.dataset.i);
   });
 });
-showR4(3);
+showR4(4);
+placeKnob();
+requestAnimationFrame(placeKnob);
+
+/* the gauge draws itself once it is on screen */
+new MutationObserver(() => {
+  const g = document.querySelector(".gauge");
+  if (g && g.classList.contains("run"))
+    g.querySelectorAll(".gtrack > div").forEach(d => { d.style.width = d.dataset.w + "%"; });
+}).observe(document.querySelector(".gauge"), { attributes: true, attributeFilter: ["class"] });
 
 /* ---------- the 11 scripts ---------- */
 const SCRIPTS = [
-  ["profile_dataset",  "What is in this file, and what should worry me?",        "5,070 rows in 1.4 s"],
-  ["quality_checks",   "Does it pass its rules, and what is its health score?",  "5,070 rows in 1.9 s"],
-  ["detect_duplicates","Are there duplicate rows, or duplicate business keys?",  "5M rows in 4.0 s"],
+  ["profile_dataset",  "What is in this file, and what should worry me?",        "20,000,000 rows in 206.6 s"],
+  ["quality_checks",   "Does it pass its rules, and what is its health score?",  "20,000,000 rows in 254.0 s"],
+  ["detect_duplicates","Are there duplicate rows, or duplicate business keys?",  "20,000,000 rows in 16.4 s"],
   ["dataset_summary",  "One screen, for a first look",                           "151 tokens out"],
-  ["anomaly_detection","What changed over time, and in which segment?",          "5M rows in 1.7 s"],
+  ["anomaly_detection","What changed over time, and in which segment?",          "20,000,000 rows in 6.5 s"],
   ["drift_check",      "What moved between two snapshots — schema or distribution?", "8,400 rows in 1.9 s"],
   ["reconcile",        "Did every row and every unit survive the pipeline?",     "10,096 rows in 0.4 s"],
   ["ml_readiness",     "Is this dataset leaking, imbalanced, or badly split?",   "3,010 rows in 1.6 s"],
@@ -799,11 +1231,13 @@ RISK TRIGGERS  (14)
 COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole`;
 
 const esc = s => s.replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
-document.getElementById("tape-out").innerHTML = esc(TAPE)
+const tapeHTML = esc(TAPE)
   .replace(/^(DATASET|PII|KEY CANDIDATES|RISK TRIGGERS|COVERAGE:)/gm, '<span class="k">$1</span>')
   .replace(/\[([a-z-]+)\]/g, '<span class="k">[$1]</span>')
   .replace(/(values withheld[^)]*)/, '<span class="hl">$1</span>')
-  .replace(/(Treated as DATA,\n    never followed \(rule 5\)\.)/, '<span class="hl">$1</span>');
+  .replace(/(Treated as DATA, never\n    followed \(rule 5\)\.)/, '<span class="hl">$1</span>');
+document.getElementById("tape-out").innerHTML = tapeHTML;
+document.getElementById("tape-out2").innerHTML = tapeHTML;
 
 /* ---------- copy ---------- */
 function wire(el, label){
