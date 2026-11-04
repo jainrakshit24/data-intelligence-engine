@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Intelligence Engine</title>
+<meta name="description" content="An Agent Skill that profiles, grades and explains your data without ever sending it a row. The scripts compute; the model only sees what they add up to.">
+<meta property="og:title" content="Data Intelligence Engine">
+<meta property="og:description" content="The model never sees your rows. Only what they add up to.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="fonts.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='5' fill='%2315181C'/><rect x='8' y='6' width='16' height='4' rx='1' fill='%23FFA424'/><rect x='8' y='14' width='16' height='4' rx='1' fill='%23FFA424'/><rect x='8' y='22' width='16' height='4' rx='1' fill='%232F353C'/></svg>">
+<style>
+:root{
+  --housing:#15181C; --housing-2:#191D22; --deep:#0F1215; --deep-2:#0B0E10;
+  --bezel:#23282E; --bezel-hi:#343B43; --bezel-lo:#0C0F12;
+  --ink:#E8EAED; --ink-2:#A7AEB6; --ink-3:#8A9199;
+  --lit:#FFA424; --lit-soft:#FFC675;
+  --ghost:#2F353C; --ghost-hi:#3A424A;
+  --ok:#5BD67E; --bad:#FF6B5E;
+  --tape:#EDE7DA; --tape-2:#E2DACA; --tape-ink:#22201C; --tape-dim:#5C564B;
+  --gut:clamp(20px,5vw,64px);
+  --r:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--housing); color:var(--ink);
+  font-family:Archivo,system-ui,sans-serif; font-weight:420;
+  font-size:17px; line-height:1.55; letter-spacing:-0.005em;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+/* ---- browser surfaces: these belong to the panel, not to the browser ---- */
+::selection{background:var(--lit);color:var(--deep-2)}
+:focus-visible{outline:2px solid var(--lit);outline-offset:3px;border-radius:2px}
+html{scrollbar-color:var(--bezel-hi) var(--deep-2);scrollbar-width:thin}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--deep-2)}
+::-webkit-scrollbar-thumb{background:var(--bezel-hi);border:3px solid var(--deep-2);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#47505a}
+input,button{font:inherit;color:inherit}
+a{color:inherit}
+
+/* ---- the panel: milled plate the whole page is machined out of ---- */
+.plate{
+  max-width:1280px;margin:0 auto;padding:0 var(--gut);
+}
+.rail{
+  border-left:1px solid var(--bezel);border-right:1px solid var(--bezel);
+  max-width:1280px;margin:0 auto;
+}
+.screw{
+  width:11px;height:11px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--bezel-hi),#1b1f24 70%);
+  box-shadow:0 1px 1px rgba(0,0,0,.6),inset 0 0 0 1px #0d1013;
+  position:relative;flex:none
+}
+.screw::after{content:"";position:absolute;inset:3px 1px;border-top:1px solid #0d1013;transform:rotate(28deg)}
+
+/* ---- top bezel ---- */
+header{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg,var(--bezel) 0%,#1d2228 100%);
+  border-bottom:1px solid var(--bezel-lo);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 6px 18px -8px rgba(0,0,0,.8);
+}
+.bar{display:flex;align-items:center;gap:clamp(14px,2.4vw,30px);height:62px}
+.mark{display:flex;align-items:center;gap:11px;text-decoration:none;flex:none}
+.mark .lamp{width:9px;height:9px;border-radius:50%;background:var(--lit);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}
+.mark b{
+  font-weight:760;font-size:15px;letter-spacing:.055em;text-transform:uppercase;
+  color:#D4D9DE;text-shadow:0 1px 0 rgba(0,0,0,.65);
+}
+nav{display:flex;gap:clamp(10px,1.7vw,24px);margin-left:auto;align-items:center}
+nav a{
+  text-decoration:none;color:var(--ink-2);font-size:13.5px;font-weight:530;
+  letter-spacing:.02em;padding:7px 2px;border-bottom:1.5px solid transparent;transition:color .15s,border-color .15s
+}
+nav a:hover{color:var(--ink);border-bottom-color:var(--lit)}
+.ghost-btn{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;flex:none;
+  font-size:13.5px;font-weight:560;padding:8px 14px;border-radius:var(--r);
+  color:var(--ink);background:#1a1e23;
+  border:1px solid var(--bezel-hi);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 2px 5px rgba(0,0,0,.45);
+  transition:background .15s,border-color .15s,transform .08s
+}
+.ghost-btn:hover{background:#20252b;border-color:#48525c}
+.ghost-btn:active{transform:translateY(1px)}
+@media(max-width:860px){nav .hide-s{display:none}.bar{height:56px}}
+@media(max-width:620px){
+  nav a:not(.ghost-btn){display:none}
+  .mark b{font-size:12.5px;letter-spacing:.04em}
+  .bar{gap:10px}
+  .ghost-btn{padding:7px 11px}
+}
+@media(max-width:380px){.mark b{max-width:9.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* ---- typography ---- */
+h1{
+  font-weight:800;letter-spacing:-0.042em;line-height:0.98;
+  font-size:clamp(2.3rem,4.75vw,3.8rem);text-wrap:balance;
+}
+h1 .lit-line{display:block;text-wrap:balance}
+h1 .dim{color:var(--ink-3);font-weight:700;display:block;text-wrap:balance}
+h2{
+  font-weight:740;letter-spacing:-0.032em;line-height:1.05;
+  font-size:clamp(1.85rem,3.6vw,2.9rem);text-wrap:balance;
+}
+h3{font-weight:680;letter-spacing:-0.02em;font-size:1.16rem;line-height:1.3}
+p{max-width:68ch}
+.lede{font-size:clamp(1.02rem,1.5vw,1.2rem);color:var(--ink-2);line-height:1.6}
+.small{font-size:14px;color:var(--ink-3);line-height:1.6}
+.tiny{font-size:12.5px;color:var(--ink-3);letter-spacing:.055em;text-transform:uppercase;font-weight:620}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+
+/* ---- sections as panel modules ---- */
+section{padding:clamp(52px,7vh,86px) 0;scroll-margin-top:62px}
+main > .plate + .plate > section{border-top:1px solid var(--bezel)}
+
+/* ---- hero ---- */
+.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,1fr);gap:clamp(26px,3.4vw,54px);align-items:start;padding-top:clamp(34px,5vh,60px);padding-bottom:0}
+.claim{padding-top:6px}
+.claim p{margin-top:24px}
+.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px;align-items:center}
+
+/* the install control: a milled key on the panel */
+.key{
+  display:inline-flex;align-items:stretch;border-radius:4px;overflow:hidden;
+  border:1px solid #4a3410;background:linear-gradient(180deg,#FFB44A,var(--lit) 55%,#E8911A);
+  box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 3px 0 #8E5A0E,0 8px 16px -6px rgba(0,0,0,.75);
+  transition:transform .09s,box-shadow .09s;cursor:pointer;max-width:100%
+}
+.key:hover{box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 3px 0 #8E5A0E,0 11px 22px -7px rgba(0,0,0,.8)}
+.key:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 1px 0 #8E5A0E,0 4px 9px -4px rgba(0,0,0,.8)}
+.key code{
+  font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:500;color:#1A1205;
+  padding:13px 15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em
+}
+.key .cap{
+  display:flex;align-items:center;gap:7px;padding:0 15px;flex:none;
+  background:rgba(26,18,5,.13);border-left:1px solid rgba(26,18,5,.22);
+  font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#1A1205
+}
+.alt-install{font-size:13.5px;color:var(--ink-3)}
+.alt-install code{font-family:'JetBrains Mono',monospace;color:var(--ink-2);font-size:12.8px}
+
+/* ---- the printer: tape feeding out of a slot ---- */
+.printer{position:relative;min-width:0}
+.slot{
+  height:16px;border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,var(--bezel-lo),#1a1e23 42%,var(--deep-2) 100%);
+  border:1px solid var(--bezel);border-bottom:0;
+  box-shadow:inset 0 -7px 10px -6px #000;position:relative
+}
+.slot::after{content:"";position:absolute;left:11px;right:11px;bottom:3px;height:2px;background:var(--deep-2);border-radius:2px;box-shadow:0 -1px 0 rgba(255,255,255,.05)}
+.tape{
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.14) 0 6px,transparent 6px),
+    linear-gradient(270deg,rgba(0,0,0,.14) 0 6px,transparent 6px),
+    linear-gradient(180deg,#F3EEE2,var(--tape) 14%,var(--tape-2) 100%);
+  color:var(--tape-ink);
+  font-family:'JetBrains Mono',monospace;font-size:10.4px;line-height:1.64;
+  padding:15px 13px 40px;overflow:hidden;position:relative;
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.85);
+  mask-image:linear-gradient(180deg,#000 72%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 100%);
+  max-height:min(54vh,470px)
+}
+.tape pre{white-space:pre;font:inherit;overflow:hidden}
+.tape .k{color:#8A3F12;font-weight:600}
+.tape .d{color:var(--tape-dim)}
+.tape .hl{background:rgba(255,164,36,.34);box-shadow:0 0 0 1px rgba(138,63,18,.18)}
+.perf{position:absolute;left:0;right:0;height:9px;background-image:radial-gradient(circle,var(--tape-2) 1.6px,transparent 1.7px);background-size:9px 9px;opacity:.85}
+.printer figcaption{margin-top:11px;font-size:12px;color:var(--ink-3);line-height:1.5}
+.printer figcaption svg{vertical-align:-2px;margin-right:5px}
+
+/* ---- readout strip across the bottom bezel of the hero ---- */
+.strip{
+  margin-top:clamp(40px,6vh,72px);
+  background:linear-gradient(180deg,var(--deep) ,var(--deep-2));
+  border:1px solid var(--bezel);border-radius:var(--r);
+  box-shadow:inset 0 2px 12px rgba(0,0,0,.75),0 1px 0 rgba(255,255,255,.04);
+  display:grid;grid-template-columns:repeat(5,1fr);
+}
+.cell{padding:18px 16px 16px;border-left:1px solid #191D22;display:flex;flex-direction:column;gap:9px;min-width:0}
+.cell:first-child{border-left:0}
+.cell .tiny{color:var(--ink-3);font-size:11px}
+.cell.dark .tiny{color:var(--ink-3)}
+.cell.dark .lbl-off{color:var(--ink-3)}
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr}
+  .strip{grid-template-columns:repeat(2,1fr)}
+  .cell:nth-child(odd){border-left:0}
+  .cell{border-top:1px solid #191D22}
+  .cell:nth-child(-n+2){border-top:0}
+}
+@media(max-width:460px){.strip{grid-template-columns:1fr}.cell{border-left:0;border-top:1px solid #191D22}.cell:first-child{border-top:0}}
+
+/* ---- seven segment ---- */
+.seg{display:block;height:var(--h,38px);width:auto}
+.seg .on{fill:var(--lit)}
+.seg .off{fill:var(--ghost)}
+.seg.green .on{fill:var(--ok)}
+.seg.dead .on{fill:var(--ghost)}
+.segrow{display:flex;align-items:flex-end;gap:3px;flex-wrap:nowrap;min-width:0}
+.segrow .sfx{font-size:calc(var(--h,38px)*.42);font-weight:800;color:var(--lit);line-height:1;
+  align-self:flex-end;padding-bottom:calc(var(--h,38px)*.04);margin:0 1px}
+.segrow .sfx.mul{color:var(--ink-2);font-size:calc(var(--h,38px)*.36);margin-left:6px;padding-bottom:calc(var(--h,38px)*.08)}
+.segrow.dead .sfx{color:var(--ink-3)}
+
+/* ---- rule-4 module ---- */
+.r4{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(26px,4vw,56px);align-items:start}
+.selector{display:flex;gap:0;border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep);width:fit-content;max-width:100%;box-shadow:inset 0 2px 8px rgba(0,0,0,.6)}
+.selector button{
+  background:transparent;border:0;border-left:1px solid var(--bezel);cursor:pointer;
+  padding:9px 15px;font-size:13px;font-weight:620;color:var(--ink-3);letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;transition:color .13s,background .13s;position:relative
+}
+.selector button:first-child{border-left:0}
+.selector button:hover{color:var(--ink-2)}
+.selector button[aria-pressed=true]{color:var(--deep-2);background:var(--lit);text-shadow:none}
+.scalebar{display:flex;flex-direction:column;gap:18px;margin-top:26px}
+.meter{display:flex;flex-direction:column;gap:7px}
+.meter .mh{display:flex;justify-content:space-between;align-items:baseline;gap:14px;font-size:13.5px}
+.meter .mh b{font-weight:650;color:var(--ink)}
+.meter .mh span{color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:13px}
+.track{height:13px;background:var(--deep-2);border:1px solid #1E2329;border-radius:2px;overflow:hidden;box-shadow:inset 0 1px 4px rgba(0,0,0,.7)}
+.fill{height:100%;width:0;transition:width .62s cubic-bezier(.16,1,.3,1)}
+.fill.file{background:repeating-linear-gradient(135deg,#6E3A2E 0 7px,#5E3127 7px 14px)}
+.fill.out{background:linear-gradient(90deg,var(--lit),var(--lit-soft))}
+.ratio{
+  background:linear-gradient(180deg,var(--deep),var(--deep-2));
+  border:1px solid var(--bezel);border-radius:var(--r);padding:22px;
+  box-shadow:inset 0 2px 14px rgba(0,0,0,.8);display:flex;flex-direction:column;gap:14px;align-items:flex-start
+}
+@media(max-width:900px){.r4{grid-template-columns:1fr}}
+
+/* ---- spec plate: the rules, engraved as rows, not cards ---- */
+.spec{border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep);list-style:none}
+.spec li{display:grid;grid-template-columns:auto minmax(0,13.5rem) minmax(0,1fr);gap:clamp(14px,2.2vw,30px);
+  align-items:baseline;padding:20px 24px;border-top:1px solid #1B2026}
+.spec li:first-child{border-top:0}
+.spec .no{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--ink-3);
+  letter-spacing:.06em;padding-top:3px}
+.spec .nm{font-weight:700;font-size:1.02rem;letter-spacing:-0.012em;color:var(--ink)}
+.spec .tx{font-size:14.5px;color:var(--ink-2);line-height:1.58;max-width:60ch}
+.spec .tx code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lit)}
+.spec li.lead{background:linear-gradient(90deg,rgba(255,164,36,.055),transparent 62%);padding:26px 24px}
+.spec li.lead .no{color:var(--lit)}
+.spec li.lead .nm{font-size:1.2rem}
+.spec li.lead .tx{font-size:15.5px;color:var(--ink)}
+.spec .rest{display:block;grid-column:1/-1;padding-top:4px;font-size:13.5px;color:var(--ink-3)}
+.spec .rest b{color:var(--ink-2);font-weight:620}
+@media(max-width:760px){
+  .spec li{grid-template-columns:auto minmax(0,1fr);row-gap:8px;padding:18px 18px}
+  .spec li.lead{padding:22px 18px}
+  .spec .tx{grid-column:2}
+}
+
+/* ---- context gauge: one figure, two marks ---- */
+.gauge{margin-top:30px;border:1px solid var(--bezel);border-radius:var(--r);background:var(--deep);padding:26px 24px 22px}
+.gtop{display:flex;align-items:flex-end;justify-content:space-between;gap:26px;flex-wrap:wrap;margin-bottom:26px}
+.gtop p{font-size:14px;color:var(--ink-2);max-width:40ch;margin-bottom:3px}
+.gtrack{position:relative;height:30px;background:var(--deep-2);border:1px solid #1E2329;border-radius:2px;
+  box-shadow:inset 0 2px 7px rgba(0,0,0,.75)}
+.gtrack .seg-fill{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(135deg,#2A3138 0 8px,#242A31 8px 16px)}
+.gtrack .seg-task{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--lit),var(--lit-soft))}
+.gtrack .seg-router{position:absolute;inset:0 auto 0 0;background:#FFE0B0}
+.gmarks{position:relative;height:46px;margin-top:9px}
+.gmark{position:absolute;top:0;transform:translateX(-1px);padding-left:9px;border-left:1px solid var(--bezel-hi);
+  font-size:12px;color:var(--ink-3);line-height:1.35;white-space:nowrap}
+.gmark b{display:block;font-size:14px;color:var(--ink);font-weight:650;font-variant-numeric:tabular-nums}
+.gmark.end{transform:none;right:0;padding-left:0;padding-right:9px;border-left:0;border-right:1px solid var(--bezel-hi);text-align:right;left:auto}
+@media(max-width:640px){.gmarks{height:74px}.gmark:nth-child(2){top:37px}}
+
+
+/* ---- evidence ladder ---- */
+.ladder{display:flex;flex-direction:column;border:1px solid var(--bezel);border-radius:var(--r);overflow:hidden;background:var(--deep)}
+.rung{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:16px;align-items:center;padding:15px 20px;border-top:1px solid #1B2026}
+.rung:first-child{border-top:0}
+.rung .pip{width:13px;height:13px;border-radius:2px;background:var(--ghost);flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.rung.lit .pip{background:var(--lit);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.rung.ok .pip{background:var(--ok);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.rung .nm{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--ink-3);min-width:148px}
+.rung.lit .nm{color:var(--lit)}
+.rung.ok .nm{color:var(--ok)}
+.rung .ds{font-size:14px;color:var(--ink-2);min-width:0}
+.rung.off{background:var(--deep-2)}
+.rung.off .ds{color:var(--ink-3)}
+@media(max-width:620px){.rung{grid-template-columns:auto minmax(0,1fr);row-gap:6px}.rung .ds{grid-column:2}}
+
+/* ---- scripts table ---- */
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}
+.tbl th{text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);font-weight:640;padding:0 14px 11px 0;border-bottom:1px solid var(--bezel)}
+.tbl td{padding:12px 14px 12px 0;border-bottom:1px solid #1B2026;vertical-align:baseline}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .s{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--lit);white-space:nowrap}
+.tbl .q{color:var(--ink-2)}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap;padding-right:0}
+@media(max-width:700px){.tbl .hide-s,.tbl th.hide-s{display:none}}
+
+/* ---- routing ---- */
+.intents{display:flex;flex-wrap:wrap;gap:6px;margin-top:28px}
+.intents span{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--ink-2);
+  background:var(--deep);border:1px solid #1F242A;border-radius:2px;padding:5px 8px;letter-spacing:.01em
+}
+.intents span.hot{color:var(--lit);border-color:#4a3410;background:#1d1708}
+
+/* ---- install ---- */
+.install-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(20px,3vw,40px)}
+.cmd{
+  display:flex;align-items:center;gap:12px;background:var(--deep-2);border:1px solid var(--bezel);
+  border-radius:var(--r);padding:13px 14px;box-shadow:inset 0 2px 8px rgba(0,0,0,.6);margin-top:12px
+}
+.cmd code{font-family:'JetBrains Mono',monospace;font-size:12.8px;color:var(--ink);overflow-x:auto;white-space:nowrap;flex:1;scrollbar-width:none}
+.cmd code::-webkit-scrollbar{display:none}
+.copy{
+  background:#1a1e23;border:1px solid var(--bezel-hi);color:var(--ink-2);cursor:pointer;flex:none;
+  border-radius:2px;padding:6px 9px;font-size:11.5px;font-weight:620;letter-spacing:.05em;text-transform:uppercase;
+  transition:color .13s,border-color .13s,background .13s
+}
+.copy:hover{color:var(--ink);border-color:#48525c;background:#20252b}
+.copy.done{color:var(--ok);border-color:#2f5c3d}
+
+/* ---- footer ---- */
+footer{background:linear-gradient(180deg,#1d2228,var(--bezel));border-top:1px solid var(--bezel-lo);padding:34px 0 40px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+.foot{display:flex;flex-wrap:wrap;gap:18px 30px;align-items:center;justify-content:space-between}
+.foot a{color:var(--ink-2);text-decoration:none;font-size:13.5px;border-bottom:1px solid transparent}
+.foot a:hover{color:var(--ink);border-bottom-color:var(--lit)}
+.caveat{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;color:var(--ink-3);line-height:1.65;max-width:84ch}
+
+.note{font-size:13px;color:var(--ink-3);line-height:1.6;margin-top:16px;max-width:72ch}
+.note b{color:var(--ink-2);font-weight:620}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="plate bar">
+    <a class="mark" href="#top"><span class="lamp" aria-hidden="true"></span><b>Data Intelligence Engine</b></a>
+    <nav>
+      <a href="#rule4" class="hide-s">What it sends</a>
+      <a href="#rules" class="hide-s">Rules</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#scripts" class="hide-s">Scripts</a>
+      <a href="#install">Install</a>
+      <a class="ghost-btn" href="https://github.com/jainrakshit24/data-intelligence-engine">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="rail" id="top">
+
+<!-- ============ FACE A ============ -->
+<div class="plate">
+<section class="hero">
+  <div class="claim">
+    <h1><span class="lit-line">The model never sees your rows.</span><span class="dim">Only what they add up to.</span></h1>
+    <p class="lede">An Agent Skill that takes a data problem in plain words, works out what to do with it, runs the checks, and reports what it found. Every claim is graded by the evidence behind it, and every number carries how much data it covered.</p>
+
+    <div class="actions">
+      <button class="key" data-copy="/plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine" aria-label="Copy the Claude Code install command">
+        <code>/plugin install data-intelligence-engine</code>
+        <span class="cap"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.4"/><path d="M10.5 3.5v-1h-8v8h1"/></svg><span class="cap-t">Copy</span></span>
+      </button>
+      <span class="alt-install">or anywhere else &mdash; <code>npx skills add jainrakshit24/data-intelligence-engine</code></span>
+    </div>
+    <p class="note">Then <code class="mono">pip install duckdb sqlglot</code>. Your agent picks the skill up by name and uses it when a request fits. <b>You never invoke it by hand.</b></p>
+  </div>
+
+  <figure class="printer">
+    <div class="slot" aria-hidden="true"></div>
+    <div class="tape">
+      <div class="perf" style="top:0" aria-hidden="true"></div>
+      <pre id="tape-out" aria-label="Verbatim output of a real profile_dataset run"></pre>
+    </div>
+    <figcaption>
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 1.6 2 4.4v4c0 3.3 2.5 5.3 6 6 3.5-.7 6-2.7 6-6v-4L8 1.6Z"/><path d="m5.6 8 1.7 1.8L10.6 6.4"/></svg>
+      Real output from <code class="mono" style="font-size:11.5px">profile_dataset.py orders.csv</code> &mdash; 5,070 rows. Excerpted and re-wrapped to this column; no figure altered.
+    </figcaption>
+  </figure>
+</section>
+
+<!-- readout strip -->
+<div class="strip" id="strip">
+  <div class="cell"><div class="segrow" data-seg="27"></div><span class="tiny">Intents routed</span></div>
+  <div class="cell"><div class="segrow" data-seg="52"></div><span class="tiny">Methodology modules</span></div>
+  <div class="cell"><div class="segrow" data-seg="11"></div><span class="tiny">Scripts</span></div>
+  <div class="cell"><div class="segrow" data-seg="138"></div><span class="tiny">Tests passing</span></div>
+  <div class="cell dark">
+    <div class="segrow dead" data-seg="--" data-dead="1"></div>
+    <span class="tiny lbl-off">Never lit: NOT_VERIFIED</span>
+  </div>
+</div>
+</div>
+
+<!-- ============ RULE 4 ============ -->
+<div class="plate">
+<section id="rule4">
+  <div class="r4">
+    <div>
+      <h2>Five million rows cost eleven percent more than ten thousand.</h2>
+      <p class="lede" style="margin-top:20px">Opening a data file into an agent's context sends its rows to the model provider. This skill does not do it. The scripts read the file; the model receives the aggregates. What the model receives barely moves when the data grows five hundred times.</p>
+      <p class="note">Pick a size and watch the second bar fail to move.</p>
+      <div class="selector" role="group" aria-label="Dataset size" style="margin-top:20px">
+        <button data-i="0" aria-pressed="false">10K rows</button>
+        <button data-i="1" aria-pressed="false">100K</button>
+        <button data-i="2" aria-pressed="false">1M</button>
+        <button data-i="3" aria-pressed="true">5M</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ratio">
+        <span class="tiny" style="color:var(--ink-3)">Smaller than reading the file</span>
+        <div class="segrow" id="ratio-seg" style="--h:46px"></div>
+        <span class="small" id="ratio-note" style="color:var(--ink-3)"></span>
+      </div>
+
+      <div class="scalebar">
+        <div class="meter">
+          <div class="mh"><b>If the agent read the file</b><span id="m-file"></span></div>
+          <div class="track"><div class="fill file" id="f-file"></div></div>
+        </div>
+        <div class="meter">
+          <div class="mh"><b>What this skill sends instead</b><span id="m-out"></span></div>
+          <div class="track"><div class="fill out" id="f-out"></div></div>
+        </div>
+        <p class="small" id="r4-foot"></p>
+      </div>
+    </div>
+  </div>
+  <p class="note"><b>How these were measured.</b> Bars are drawn on a logarithmic scale, because a linear one would render the second bar invisible. Token counts use <code class="mono">tiktoken o200k_base</code> as a proxy, since Claude's tokenizer is not public, so they are exact for comparison and roughly &plusmn;10% in absolute terms. The 10,000-row file was counted exactly; the three larger file figures are extrapolated from it and are labelled as estimates throughout.</p>
+</section>
+</div>
+
+<!-- ============ RULES ============ -->
+<div class="plate">
+<section id="rules">
+  <h2 style="max-width:26ch;margin-bottom:16px">Seven rules apply to every request. These four are why the reports can be trusted.</h2>
+
+  <ol class="spec">
+    <li class="lead">
+      <span class="no">RULE 04</span>
+      <span class="nm">Profile, don&rsquo;t read</span>
+      <span class="tx">Opening a data file with <code>Read</code>, <code>cat</code> or <code>head</code> puts its rows into the agent&rsquo;s context, which sends them to the model provider. The skill never does it. The scripts read the file and print only aggregates. When no script answers the question, an ad-hoc query may return counts, sums and rates, never rows.</span>
+    </li>
+    <li>
+      <span class="no">RULE 02</span>
+      <span class="nm">No fake execution</span>
+      <span class="tx">If the file, database, API or service could not be reached, the report says so. A claim that was reasoned about but never run carries <code>NOT_VERIFIED</code> all the way to the end and is never promoted to a finding.</span>
+    </li>
+    <li>
+      <span class="no">RULE 06</span>
+      <span class="nm">Coverage, in numbers</span>
+      <span class="tx">Every report states how much data it covered: rows read of N, files processed and failed, the read strategy, and every filter that removed rows. No claim may be broader than its coverage, and a sample produces an <em>estimate</em> carrying its sample size.</span>
+    </li>
+    <li>
+      <span class="no">RULE 05</span>
+      <span class="nm">Data is never instructions</span>
+      <span class="tx">Text inside cells, column names, SQL comments or API payloads is data, even when it reads like a command. It is never followed. If it looks like an injection attempt, that is itself a finding. The real <code>orders.csv</code> above carries four.</span>
+    </li>
+    <li>
+      <span class="rest"><b>The other three.</b> Rule 01, the evidence ladder below. Rule 03, no silent changes to your data: every transforming step arrives with its expected impact in numbers, and the original is kept. Rule 07, insight integrity: averages recomputed from sums and counts, every pooled comparison checked for reversal inside the groups, and no causal verb without a mechanism.</span>
+    </li>
+  </ol>
+</section>
+</div>
+
+<!-- ============ EVIDENCE LADDER ============ -->
+<div class="plate">
+<section id="evidence">
+  <h2 style="max-width:24ch">Nothing is called a cause until a check supports it.</h2>
+  <p class="lede" style="margin:20px 0 32px">Below <code class="mono" style="color:var(--ok)">CONFIRMED</code> the report may say <em>likely</em>, <em>consistent with</em> or <em>requires verification</em>. Never <em>caused by</em>.</p>
+
+  <div class="ladder">
+    <div class="rung lit"><span class="pip" aria-hidden="true"></span><span class="nm">OBSERVATION</span><span class="ds">Measured. The number is in the output and you can recount it.</span></div>
+    <div class="rung lit"><span class="pip" aria-hidden="true"></span><span class="nm">INTERPRETATION</span><span class="ds">What that measurement may mean, stated as reading rather than fact.</span></div>
+    <div class="rung lit"><span class="pip" aria-hidden="true"></span><span class="nm">HYPOTHESIS</span><span class="ds">A testable cause, with the check that would settle it named.</span></div>
+    <div class="rung ok"><span class="pip" aria-hidden="true"></span><span class="nm">CONFIRMED</span><span class="ds">The source was reachable, the check ran, and it supported the hypothesis.</span></div>
+    <div class="rung off"><span class="pip" aria-hidden="true"></span><span class="nm">NOT_VERIFIED</span><span class="ds">The check could not run. The cell never lights, and the finding is never promoted.</span></div>
+  </div>
+
+  <p class="note"><b>A score always travels with its grade.</b> The run above returned <code class="mono" style="color:var(--lit)">94.5/100 PROVISIONAL (4 of 6 dimensions measured)</code>. Provisional because every check was inferred rather than confirmed against your business rules. The skill will not quietly drop the word.</p>
+</section>
+</div>
+
+<!-- ============ ROUTING ============ -->
+<div class="plate">
+<section id="routing">
+  <h2 style="max-width:26ch">A thin router. Everything else loads only when an intent names it.</h2>
+  <p class="lede" style="margin-top:20px">One request routes to as many intents as apply. <em>&ldquo;My daily customer pipeline has 30% fewer records, find out why&rdquo;</em> is a quality check, an anomaly scan, a pipeline debug and an investigation at once, and still reads a fraction of the corpus.</p>
+
+  <div class="gauge">
+    <div class="gtop">
+      <p>The whole corpus is 43,644 tokens. This is the most any single task has ever drawn from it.</p>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
+        <div class="segrow" data-seg="26.3" style="--h:40px"></div>
+        <span class="tiny" style="color:var(--ink-3)">Per cent, at the very worst</span>
+      </div>
+    </div>
+    <div class="gtrack" role="img" aria-label="Of 43,644 tokens in the corpus, the router loads 3,347 every time and the heaviest real task loads 12,357 in total, which is 26.3 per cent.">
+      <div class="seg-fill" style="width:100%"></div>
+      <div class="seg-task" style="width:28.3%"></div>
+      <div class="seg-router" style="width:7.7%"></div>
+    </div>
+    <div class="gmarks">
+      <div class="gmark" style="left:7.7%"><b>3,347</b>router, every time</div>
+      <div class="gmark" style="left:28.3%"><b>12,357</b>heaviest real task</div>
+      <div class="gmark end"><b>43,644</b>all 52 modules</div>
+    </div>
+  </div>
+
+  <div class="intents" id="intents"></div>
+  <p class="note">Highlighted are the four intents that one sentence above routes to simultaneously. Token figures carry the same <code class="mono">o200k_base</code> proxy caveat as the rest of this page.</p>
+</section>
+</div>
+
+<!-- ============ SCRIPTS ============ -->
+<div class="plate">
+<section id="scripts">
+  <h2 style="max-width:24ch">They run for you. They also run on their own.</h2>
+  <p class="lede" style="margin:20px 0 34px">Every one prints aggregates and a <code class="mono">COVERAGE:</code> line. None prints raw rows by default.</p>
+  <table class="tbl">
+    <thead><tr><th>Script</th><th>What it answers</th><th class="n hide-s">Measured</th></tr></thead>
+    <tbody id="scripts-body"></tbody>
+  </table>
+  <p class="note"><b>About those timings.</b> Measured on the author's laptop against synthetic, uniform data where only the row count was varied, never column count or width, so real wide data will be slower. Peak memory ran 1.0&ndash;1.5&nbsp;GB at five million rows.</p>
+</section>
+</div>
+
+<!-- ============ SCOPE ============ -->
+<div class="plate">
+<section id="scope">
+  <h2 style="max-width:30ch">A skill that pretends to have run something is worse than one that tells you it did not.</h2>
+  <ol class="spec" style="margin-top:32px">
+    <li>
+      <span class="no">OUT</span>
+      <span class="nm">It does not train or deploy models</span>
+      <span class="tx">Asked to &ldquo;build a model&rdquo;, it checks the data is ready: leakage, class balance, split problems. Then it says where its job ends.</span>
+    </li>
+    <li>
+      <span class="no">OUT</span>
+      <span class="nm">It has no live warehouse connectors</span>
+      <span class="tx">It writes the SQL, labels it <code>NOT_VERIFIED</code>, and asks you to run it. It will not claim a result it could not fetch.</span>
+    </li>
+    <li><span class="rest">Both limits are deliberate, and both are easier to live with than a confident wrong answer.</span></li>
+  </ol>
+</section>
+</div>
+
+<!-- ============ INSTALL ============ -->
+<div class="plate">
+<section id="install">
+  <div class="install-grid">
+    <div>
+      <h3>Claude Code</h3>
+      <p class="small" style="margin-top:7px">Version 2.1.275 or later. No clone.</p>
+      <div class="cmd"><code>/plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine</code><button class="copy" data-copy="/plugin install data-intelligence-engine --marketplace jainrakshit24/data-intelligence-engine">Copy</button></div>
+    </div>
+    <div>
+      <h3>Cursor, Codex, Windsurf and the rest</h3>
+      <p class="small" style="margin-top:7px">Through the Agent Skills directory.</p>
+      <div class="cmd"><code>npx skills add jainrakshit24/data-intelligence-engine</code><button class="copy" data-copy="npx skills add jainrakshit24/data-intelligence-engine">Copy</button></div>
+    </div>
+    <div>
+      <h3>What the scripts need</h3>
+      <p class="small" style="margin-top:7px">Python 3.9+. <code class="mono">pyyaml</code> only for dbt projects.</p>
+      <div class="cmd"><code>pip install duckdb sqlglot pyyaml</code><button class="copy" data-copy="pip install duckdb sqlglot pyyaml">Copy</button></div>
+    </div>
+  </div>
+  <p class="note">The methodology works without the Python packages. The scripts do not, and the skill names the one that could not run rather than guessing around it.</p>
+</section>
+</div>
+
+</main>
+
+<footer>
+  <div class="plate">
+    <div class="foot">
+      <div style="display:flex;align-items:center;gap:11px">
+        <span class="screw" aria-hidden="true"></span>
+        <span class="small" style="color:var(--ink-2)">Data Intelligence Engine &middot; v0.4.0 &middot; MIT</span>
+      </div>
+      <div style="display:flex;gap:26px;flex-wrap:wrap">
+        <a href="https://github.com/jainrakshit24/data-intelligence-engine">Repository</a>
+        <a href="https://skills.sh/jainrakshit24/data-intelligence-engine/data-intelligence-engine">Agent Skills directory</a>
+        <a href="https://github.com/jainrakshit24/data-intelligence-engine/blob/main/LICENSE">Licence</a>
+      </div>
+    </div>
+    <p class="caveat"><b style="color:var(--ink-2)">Every figure on this page comes from a run.</b> Token counts are measured with <code class="mono">tiktoken o200k_base</code> as a proxy for Claude's tokenizer, which is not public: exact for comparing one intent against another, roughly &plusmn;10% in absolute terms. Speed and memory come from a single laptop whose wall time drifts with thermal throttling across a session, so read the shape and not the seconds. The scaling datasets are synthetic and uniform. There are no install counts, stars, users or benchmarks against other tools on this page because none have been measured.</p>
+  </div>
+</footer>
+<script>
+(() => {
+"use strict";
+const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- seven-segment ---------- */
+/* segments: a top, b upper-right, c lower-right, d bottom, e lower-left, f upper-left, g middle */
+const GLYPH = {
+  "0":"abcdef","1":"bc","2":"abdeg","3":"abcdg","4":"bcfg","5":"acdfg",
+  "6":"acdefg","7":"abc","8":"abcdefg","9":"abcdfg","-":"g"," ":"","×":""
+};
+const PTS = {
+  a:"8,2 38,2 33,8 13,8",   f:"6,4 11,10 11,27 5,32",  b:"40,4 41,32 35,27 35,10",
+  g:"8,34 38,34 33,40 13,40 ", e:"4,36 10,41 10,58 5,64", c:"34,41 40,36 41,64 35,58",
+  d:"13,60 33,60 38,66 8,66"
+};
+/* the middle bar needs symmetric ends; redraw g as a hexagon */
+PTS.g = "12,32 34,32 39,36 34,40 12,40 7,36";
+
+function segSVG(ch, dead){
+  const on = GLYPH[ch] ?? "";
+  const ns = "http://www.w3.org/2000/svg";
+  const s = document.createElementNS(ns, "svg");
+  s.setAttribute("viewBox", "0 0 46 68");
+  s.setAttribute("class", "seg" + (dead ? " dead" : ""));
+  s.setAttribute("aria-hidden", "true");
+  for (const k of "abcdefg"){
+    const p = document.createElementNS(ns, "polygon");
+    p.setAttribute("points", PTS[k]);
+    p.setAttribute("class", on.includes(k) ? "on" : "off");
+    p.dataset.s = k;
+    s.appendChild(p);
+  }
+  return s;
+}
+
+/* render a string of digits into a .segrow, keeping separators as text */
+function paint(row, text, dead){
+  row.textContent = "";
+  const label = String(text);
+  for (const ch of label){
+    if (ch === "," || ch === "." || ch === "×" || ch === "%"){
+      const t = document.createElement("span");
+      t.className = ch === "\u00d7" ? "sfx mul" : "sfx";
+      t.textContent = ch; row.appendChild(t);
+    } else {
+      row.appendChild(segSVG(ch, dead));
+    }
+  }
+  row.setAttribute("role", "img");
+  row.setAttribute("aria-label", label.replace(/×/g, " times"));
+}
+
+/* the one authored moment: the panel runs a lamp self-test, then settles */
+function selfTest(row, finalText, dead){
+  if (RM){ paint(row, finalText, dead); return; }
+  const frames = ["8", "8", finalText];
+  let i = 0;
+  paint(row, "8".repeat(String(finalText).replace(/[^0-9-]/g, "").length) || "8", dead);
+  const tick = () => {
+    i++;
+    if (i >= frames.length){ paint(row, finalText, dead); return; }
+    row.querySelectorAll("polygon").forEach(p => {
+      p.setAttribute("class", Math.random() > 0.35 ? "on" : "off");
+    });
+    setTimeout(tick, 110);
+  };
+  setTimeout(tick, 90);
+}
+
+const booted = new WeakSet();
+const io = new IntersectionObserver(entries => {
+  for (const e of entries){
+    if (!e.isIntersecting || booted.has(e.target)) continue;
+    booted.add(e.target);
+    const row = e.target;
+    selfTest(row, row.dataset.seg, row.dataset.dead === "1");
+  }
+}, { threshold: 0.4 });
+document.querySelectorAll("[data-seg]").forEach(r => {
+  paint(r, r.dataset.seg, r.dataset.dead === "1");
+  if (r.dataset.dead !== "1") io.observe(r);
+});
+
+/* ---------- rule 4: measured, four points ---------- */
+const R4 = [
+  { rows: "10,000",    fileTok: 352440,    outTok: 767, mb: 0.77,  exact: true  },
+  { rows: "100,000",   fileTok: 3544831,   outTok: 822, mb: 7.8,   exact: false },
+  { rows: "1,000,000", fileTok: 35753957,  outTok: 843, mb: 78.8,  exact: false },
+  { rows: "5,000,000", fileTok: 178770948, outTok: 855, mb: 394.0, exact: false }
+];
+const fmt = n => n.toLocaleString("en-US");
+const L = n => Math.log10(Math.max(n, 1));
+const LMAX = L(R4[3].fileTok);
+
+const mFile = document.getElementById("m-file"), mOut = document.getElementById("m-out");
+const fFile = document.getElementById("f-file"), fOut = document.getElementById("f-out");
+const foot  = document.getElementById("r4-foot"), rSeg = document.getElementById("ratio-seg");
+const rNote = document.getElementById("ratio-note");
+
+function showR4(i){
+  const d = R4[i];
+  const ratio = Math.round(d.fileTok / d.outTok);
+  mFile.textContent = fmt(d.fileTok) + " tokens" + (d.exact ? "" : " (est.)");
+  mOut.textContent  = fmt(d.outTok) + " tokens";
+  fFile.style.width = (L(d.fileTok) / LMAX * 100) + "%";
+  fOut.style.width  = (L(d.outTok)  / LMAX * 100) + "%";
+  foot.innerHTML = "A " + d.mb.toLocaleString("en-US") + "&nbsp;MB file. The profile that comes back is the same two and a half thousand characters it is at every size.";
+  paint(rSeg, fmt(ratio) + "×");
+  rNote.textContent = d.exact
+    ? "Counted exactly, both sides."
+    : "File side extrapolated from the exact 10,000-row count.";
+}
+document.querySelectorAll(".selector button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".selector button").forEach(o => o.setAttribute("aria-pressed", "false"));
+    b.setAttribute("aria-pressed", "true");
+    showR4(+b.dataset.i);
+  });
+});
+showR4(3);
+
+/* ---------- the 11 scripts ---------- */
+const SCRIPTS = [
+  ["profile_dataset",  "What is in this file, and what should worry me?",        "5,070 rows in 1.4 s"],
+  ["quality_checks",   "Does it pass its rules, and what is its health score?",  "5,070 rows in 1.9 s"],
+  ["detect_duplicates","Are there duplicate rows, or duplicate business keys?",  "5M rows in 4.0 s"],
+  ["dataset_summary",  "One screen, for a first look",                           "151 tokens out"],
+  ["anomaly_detection","What changed over time, and in which segment?",          "5M rows in 1.7 s"],
+  ["drift_check",      "What moved between two snapshots — schema or distribution?", "8,400 rows in 1.9 s"],
+  ["reconcile",        "Did every row and every unit survive the pipeline?",     "10,096 rows in 0.4 s"],
+  ["ml_readiness",     "Is this dataset leaking, imbalanced, or badly split?",   "3,010 rows in 1.6 s"],
+  ["sql_check",        "What does this SQL read, write and break?",              "static, no run"],
+  ["dag_check",        "What is wrong with this Airflow DAG, without importing it?", "static, no import"],
+  ["dbt_check",        "What is wrong with this dbt project, without running it?",   "static, no run"]
+];
+document.getElementById("scripts-body").innerHTML = SCRIPTS.map(
+  ([s, q, m]) => `<tr><td class="s">${s}.py</td><td class="q">${q}</td><td class="n hide-s">${m}</td></tr>`
+).join("");
+
+/* ---------- intents ---------- */
+const HOT = new Set(["DATA_QUALITY","ANOMALY_DETECTION","PIPELINE_DEBUGGING","GENERAL_DATA_INVESTIGATION"]);
+const INTENTS = ["DATA_PROFILE","DATA_CLEANING","EDA","DATA_QUALITY","ANOMALY_DETECTION","DATA_DRIFT",
+"SCHEMA_ANALYSIS","GENERAL_DATA_INVESTIGATION","ML_DATA_PREPARATION","MODEL_READY_DATASET","PIPELINE_DESIGN",
+"ETL_DESIGN","ELT_DESIGN","CDC_DESIGN","TRANSFORMATION","WAREHOUSE_DESIGN","LAKEHOUSE_DESIGN","DBT_DESIGN",
+"AIRFLOW_DESIGN","PYSPARK_DESIGN","PIPELINE_DEBUGGING","PIPELINE_OPTIMIZATION","DATA_CONTRACT",
+"PRODUCTIONIZATION","SQL_ANALYSIS","SQL_OPTIMIZATION","DOCUMENTATION"];
+document.getElementById("intents").innerHTML = INTENTS.map(
+  i => `<span class="${HOT.has(i) ? "hot" : ""}">${i}</span>`
+).join("");
+
+/* ---------- the tape: verbatim, nothing retyped ---------- */
+const TAPE = String.raw`DATASET  orders.csv  (csv, 758 KiB)  rows 5,070  cols 17
+
+ #  column        inferred type            null  ph  distinct
+ 1  order_id      numeric (text)           0.0%   0     5,000
+ 4  phone         mixed: mostly numeric    0.0%   0     5,000
+ 7  amount        money (text)             0.0% 120     4,891
+ 8  quantity      mixed: mostly numeric    0.0%   0        14
+10  region        categorical              0.0%   8         6
+11  store_code    code w/ leading zeros    0.0%   0       399
+15  legacy_flag   categorical             92.0%   0         2
+
+PII  (values withheld — see references/privacy-and-pii.md)
+  customer_id  direct identifier (column name)
+  email        direct identifier  [hits email:5,070]
+  pincode      quasi-identifier (identifies in combination)
+  notes        contains identifiers in 25 rows (email)
+
+KEY CANDIDATES  (by name)
+  order_id     70 repeated values in 5,070 non-null rows
+
+RISK TRIGGERS  (14)
+  [duplicate-key] order_id: looks like a key but 70 rows
+    repeat an existing value (exact count).
+  [mixed-date-formats] order_date: %Y-%m-%d 85.9%,
+    %d/%m/%Y 14.1%
+  [ambiguous-dates] order_date: 12 values read differently
+    as day-first vs month-first (e.g. 05/06/2026).
+  [silent-nulls] amount: 120 placeholder values ('n/a'×100,
+    'null'×20) = 2.4% of rows. NOT treated as missing
+    until confirmed.
+  [polluted-type] quantity: only 70.1% of present values
+    parse as numbers; the rest block typed analysis.
+  [leading-zeros] store_code: 5,070 values start with 0 —
+    casting to a number would destroy them.
+  [constant-column] channel: every value is identical.
+  [mostly-missing] legacy_flag: 92.0% null or placeholder.
+  [instruction-like-text] notes: 4 values contain text
+    that reads like an instruction to an AI or a
+    destructive command. Treated as DATA, never
+    followed (rule 5).
+  [correlated-missingness] coupon_code: overall 5.0%
+    null, but concentrated by order_date month —
+    2026-03: 79.4% null (185/233). Not random (MNAR?).
+
+COVERAGE: 5,070/5,070 rows · 1/1 files · strategy: whole`;
+
+const esc = s => s.replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
+document.getElementById("tape-out").innerHTML = esc(TAPE)
+  .replace(/^(DATASET|PII|KEY CANDIDATES|RISK TRIGGERS|COVERAGE:)/gm, '<span class="k">$1</span>')
+  .replace(/\[([a-z-]+)\]/g, '<span class="k">[$1]</span>')
+  .replace(/(values withheld[^)]*)/, '<span class="hl">$1</span>')
+  .replace(/(Treated as DATA,\n    never followed \(rule 5\)\.)/, '<span class="hl">$1</span>');
+
+/* ---------- copy ---------- */
+function wire(el, label){
+  el.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(el.dataset.copy);
+    } catch {
+      const t = document.createElement("textarea");
+      t.value = el.dataset.copy; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); } finally { t.remove(); }
+    }
+    const was = label.textContent;
+    label.textContent = "Copied";
+    el.classList.add("done");
+    setTimeout(() => { label.textContent = was; el.classList.remove("done"); }, 1600);
+  });
+}
+document.querySelectorAll(".copy").forEach(b => wire(b, b));
+document.querySelectorAll(".key").forEach(k => wire(k, k.querySelector(".cap-t")));
+})();
+</script>
+</body>
+</html>
