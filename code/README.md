@@ -57,8 +57,6 @@ references/    the methodology, loaded only when an intent names it
 workflows/     the step-by-step procedures
 templates/     report shapes
 scripts/       11 Python scripts; they read the data so the model never has to
-tests/         138 tests, with planted-defect fixtures
-evals/         routing cases
 ```
 
 ## Out of scope, on purpose
@@ -66,14 +64,6 @@ evals/         routing cases
 It does not train, tune, evaluate or deploy models. Asked to "build a model", it checks the data
 is ready and then says where its job ends. It has no live connectors to warehouses or BI tools:
 it writes the SQL, labels it `NOT_VERIFIED`, and asks you to run it.
-
-## Tests
-
-```bash
-python3 -m unittest tests.test_scripts tests.test_phase2 tests.test_phase3 tests.test_phase4
-```
-
-138 tests, about 90 seconds.
 
 ## Licence
 

@@ -9,7 +9,6 @@ graphify-out/
 # project documentation, diagrams, build log, research
 /docs/
 /PUBLISHING.md
-/README.md
 
 # the DataEye panel: a separate tool, not needed to use the skill
 /panel/
